@@ -12,13 +12,33 @@ import {
 import { toast } from "sonner";
 import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions } from "@/lib/data";
 import { summarize } from "@/lib/budget";
-import { compare, effectiveRate } from "@/lib/payoff";
+import { compare, effectiveRate, monthlyChecklist } from "@/lib/payoff";
 import { kr, manad, monthStartISO, procent } from "@/lib/format";
+import { useCoach, useLatestInsight, type Json, type StrategyAdvice } from "@/lib/coach";
+import { CoachPanel } from "@/components/CoachPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 
+type Strategy3 = "avalanche" | "snowball" | "hybrid";
+
+const STRATEGY_LABEL: Record<Strategy3, string> = {
+  avalanche: "Lavin",
+  snowball: "Snöboll",
+  hybrid: "Hybrid",
+};
+
+const STRATEGY_HINT: Record<Strategy3, string> = {
+  avalanche: "Högst effektiv ränta först",
+  snowball: "Lägst saldo först",
+  hybrid: "Stäng en liten rad, sedan lavin",
+};
+
 export const Route = createFileRoute("/_authenticated/plan")({
+  validateSearch: (search: Record<string, unknown>): { extra?: number } => {
+    const raw = Number(search["extra"]);
+    return Number.isFinite(raw) && raw > 0 ? { extra: Math.round(raw) } : {};
+  },
   head: () => ({
     meta: [
       { title: "Avbetalningsplan — Skuldfri" },
@@ -37,9 +57,10 @@ export const Route = createFileRoute("/_authenticated/plan")({
 });
 
 function PlanPage() {
+  const { extra: extraFromSearch } = Route.useSearch();
   const { data: loans = [] } = useLoans();
-  const [extra, setExtra] = useState(1000);
-  const [strategy, setStrategy] = useState<"avalanche" | "snowball">("avalanche");
+  const [extra, setExtra] = useState(extraFromSearch ?? 1000);
+  const [strategy, setStrategy] = useState<Strategy3>("avalanche");
   const [scenarioName, setScenarioName] = useState("");
 
   const month = monthStartISO();
@@ -53,6 +74,10 @@ function PlanPage() {
   const delScenario = useDeleteScenario();
 
   const result = useMemo(() => compare(loans, extra, strategy), [loans, extra, strategy]);
+  const checklist = useMemo(
+    () => monthlyChecklist(loans, extra, strategy),
+    [loans, extra, strategy],
+  );
   const { chosen, baseline, monthsSaved, interestSaved } = result;
 
   const chartData = useMemo(() => {
@@ -141,28 +166,80 @@ function PlanPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {(["avalanche", "snowball"] as const).map((s) => (
+        <div className="grid grid-cols-3 gap-2">
+          {(["avalanche", "snowball", "hybrid"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStrategy(s)}
-              className={`rounded-md border px-3 py-2 text-left text-xs transition-colors ${
+              className={`rounded-md border px-2.5 py-2 text-left text-[0.7rem] transition-colors ${
                 strategy === s
                   ? "border-primary bg-primary/10 text-foreground"
                   : "border-border text-muted-foreground"
               }`}
             >
-              <div className="text-sm font-medium">
-                {s === "avalanche" ? "Avalanche" : "Snöboll"}
-              </div>
-              {s === "avalanche" ? "Högst effektiv ränta först" : "Lägst saldo först"}
+              <div className="text-sm font-medium">{STRATEGY_LABEL[s]}</div>
+              {STRATEGY_HINT[s]}
               <div className="num mt-1 text-foreground">
-                {(s === "avalanche" ? result.avalanche : result.snowball).months ?? "–"} mån ·{" "}
-                {kr((s === "avalanche" ? result.avalanche : result.snowball).totalInterest)} ränta
+                {result[s].months ?? "–"} mån · {kr(result[s].totalInterest)} ränta
               </div>
             </button>
           ))}
         </div>
+      </div>
+
+      <StrategyCoach
+        result={result}
+        strategy={strategy}
+        extra={extra}
+        onPick={(s) => setStrategy(s)}
+      />
+
+      <div className="panel overflow-hidden">
+        <div className="label-xs px-3 pt-3">Att betala den här månaden</div>
+        <table className="mt-2 w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-left text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+              <th className="px-3 py-1.5 font-medium">Lån</th>
+              <th className="px-3 py-1.5 text-right font-medium">Minimum</th>
+              <th className="px-3 py-1.5 text-right font-medium">Extra</th>
+              <th className="px-3 py-1.5 text-right font-medium">Totalt</th>
+            </tr>
+          </thead>
+          <tbody>
+            {checklist.map((row) => (
+              <tr key={row.loanId} className="border-b border-border/60 last:border-0">
+                <td className="px-3 py-2">
+                  <div className="font-medium">
+                    {row.name}
+                    {row.isTarget && (
+                      <span className="ml-1.5 rounded bg-primary/15 px-1 text-[0.65rem] text-primary">
+                        målet
+                      </span>
+                    )}
+                  </div>
+                  {row.payment_day != null && (
+                    <div className="text-[0.7rem] text-muted-foreground">
+                      Förfaller den {row.payment_day}:e
+                    </div>
+                  )}
+                </td>
+                <td className="num px-3 py-2 text-right">{kr(row.minimum)}</td>
+                <td className="num px-3 py-2 text-right text-primary">
+                  {row.extra > 0 ? kr(row.extra) : "–"}
+                </td>
+                <td className="num px-3 py-2 text-right font-medium">{kr(row.total)}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-border">
+              <td className="px-3 py-2 text-xs text-muted-foreground">Summa denna månad</td>
+              <td colSpan={3} className="num px-3 py-2 text-right font-semibold">
+                {kr(checklist.reduce((s, r) => s + r.total, 0))}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       <div className="panel p-3">
@@ -293,13 +370,13 @@ function PlanPage() {
                   className="text-left"
                   onClick={() => {
                     setExtra(Number(s.extra_per_month));
-                    setStrategy(s.strategy as "avalanche" | "snowball");
+                    setStrategy(s.strategy as Strategy3);
                   }}
                 >
                   <span className="font-medium">{s.name}</span>
                   <span className="num ml-2 text-xs text-muted-foreground">
                     {kr(Number(s.extra_per_month))}/mån ·{" "}
-                    {s.strategy === "avalanche" ? "avalanche" : "snöboll"}
+                    {STRATEGY_LABEL[s.strategy as Strategy3] ?? s.strategy}
                   </span>
                 </button>
                 <button
@@ -314,5 +391,62 @@ function PlanPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function StrategyCoach({
+  result,
+  strategy,
+  extra,
+  onPick,
+}: {
+  result: ReturnType<typeof compare>;
+  strategy: Strategy3;
+  extra: number;
+  onPick: (s: Strategy3) => void;
+}) {
+  const cached = useLatestInsight<StrategyAdvice>("strategy");
+  const coach = useCoach<StrategyAdvice>("strategy");
+  const advice = coach.data ?? cached.data?.payload ?? null;
+
+  const input = useMemo(
+    () => ({
+      extra_per_month: extra,
+      vald_strategi: strategy,
+      strategier: (["avalanche", "snowball", "hybrid"] as const).map((s) => ({
+        namn: s,
+        manader: result[s].months,
+        skuldfri_datum: result[s].debtFreeDate,
+        total_ranta: Math.round(result[s].totalInterest),
+        ordning: result[s].perLoan
+          .filter((p) => !p.neverPaidOff)
+          .sort((a, b) => (a.payoffMonth ?? 0) - (b.payoffMonth ?? 0))
+          .map((p) => p.name),
+      })),
+    }),
+    [result, strategy, extra],
+  );
+
+  return (
+    <CoachPanel
+      title="Vilken strategi passar dig?"
+      subtitle="Siffrorna kommer från simuleringen ovan. Coachen jämför dem, räknar inte om dem."
+      hasResult={advice != null}
+      pending={coach.isPending}
+      error={coach.error}
+      cachedAt={cached.data?.created_at ?? null}
+      onRun={(force) => coach.mutate({ input: input as unknown as Json, force })}
+    >
+      {advice && (
+        <div className="space-y-2">
+          <p className="text-xs leading-relaxed text-muted-foreground">{advice.text}</p>
+          {advice.recommended !== strategy && (
+            <Button size="sm" variant="secondary" onClick={() => onPick(advice.recommended)}>
+              Byt till {STRATEGY_LABEL[advice.recommended]}
+            </Button>
+          )}
+        </div>
+      )}
+    </CoachPanel>
   );
 }
