@@ -418,15 +418,21 @@ export function monthlyChecklist(
 }
 
 /** Lån med revolverande kredit och positiv effektiv ränta. */
-export function revolvingWithInterest(loans: Loan[]): Loan[] {
+export function revolvingWithInterest(
+  loans: Loan[],
+  p: UserParameters = DEFAULT_PARAMETERS,
+): Loan[] {
   return loans.filter(
-    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l) > 0,
+    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l, p) > 0,
   );
 }
 
 /** Lånet med högst effektiv ränta (och saldo kvar). */
-export function highestRateLoan(loans: Loan[]): Loan | null {
+export function highestRateLoan(
+  loans: Loan[],
+  p: UserParameters = DEFAULT_PARAMETERS,
+): Loan | null {
   const withBalance = loans.filter((l) => l.current_balance > 0.005);
   if (withBalance.length === 0) return null;
-  return [...withBalance].sort((a, b) => effectiveRate(b) - effectiveRate(a))[0]!;
+  return [...withBalance].sort((a, b) => effectiveRate(b, p) - effectiveRate(a, p))[0]!;
 }
