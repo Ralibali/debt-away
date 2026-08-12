@@ -128,7 +128,10 @@ export function minimumPayment(loan: Loan, balance: number): number {
   if (balance <= 0) return 0;
   let base = 0;
   if (loan.is_revolving && loan.min_payment_pct != null && loan.min_payment_pct > 0) {
-    base = Math.max((balance * loan.min_payment_pct) / 100, REVOLVING_MIN_FLOOR);
+    // Procentregeln gäller, men aldrig under kreditens egna golvbelopp
+    // (t.ex. "4 % av saldot, lägst 400 kr").
+    const floor = Math.max(REVOLVING_MIN_FLOOR, loan.min_payment ?? 0);
+    base = Math.max((balance * loan.min_payment_pct) / 100, floor);
   } else if (loan.min_payment != null) {
     base = loan.min_payment;
   }
