@@ -8,15 +8,18 @@ import {
   Sparkles,
   Wallet,
   Upload,
+  CalendarDays,
   SlidersHorizontal,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationBar } from "@/components/NotificationBar";
 
 const NAV = [
   { to: "/dashboard", label: "Översikt", short: "Översikt", icon: BarChart3 },
   { to: "/lan", label: "Lån", short: "Lån", icon: Landmark },
   { to: "/plan", label: "Plan", short: "Plan", icon: Target },
+  { to: "/rytm", label: "Rytm", short: "Rytm", icon: CalendarDays },
   { to: "/sparande", label: "Sparande", short: "Spar", icon: Wallet },
   { to: "/budget", label: "Budget", short: "Budget", icon: PiggyBank },
   { to: "/transaktioner", label: "Transaktioner", short: "Trans.", icon: Receipt },
@@ -69,10 +72,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 md:pb-12">{children ?? <Outlet />}</main>
+      <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 md:pb-12">
+        <NotificationBar />
+        {children ?? <Outlet />}
+      </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card md:hidden">
-        <div className="grid grid-cols-8">
+        <div className="grid grid-cols-5">
           {NAV.map((n) => (
             <Link
               key={n.to}

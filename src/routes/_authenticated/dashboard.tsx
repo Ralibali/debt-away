@@ -22,6 +22,8 @@ import { capitalAdvice } from "@/lib/capital";
 import { kr, procent, manad, monthStartISO, LOAN_KIND_LABELS } from "@/lib/format";
 import { CrossoverChart } from "@/components/charts/CrossoverChart";
 import { CountUp } from "@/components/CountUp";
+import { DailyNumberPanel } from "@/components/DailyNumberPanel";
+import { useDaily } from "@/lib/useDaily";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -53,6 +55,7 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 }
 
 function Dashboard() {
+  const { daily } = useDaily();
   const { data: loans = [], isLoading } = useLoans();
   const { data: params } = useParameters();
   const { data: savings = [] } = useSavingsAccounts();
@@ -105,6 +108,8 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       <h1 className="text-24">Översikt</h1>
+
+      <DailyNumberPanel daily={daily} />
 
       {isLoading ? (
         <p className="text-13 text-muted-foreground">Laddar…</p>

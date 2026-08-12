@@ -24,6 +24,12 @@ export interface UserParameters {
   cooldown_large_days: number;
   cooldown_small_limit: number;
   cooldown_large_limit: number;
+  // rytm och familj
+  child_allowance_total: number;
+  child_allowance_share: number;
+  child_allowance_day: number;
+  payday: number;
+  notifications_paused_until?: string | null;
   updated_at?: string | null;
 }
 
@@ -42,18 +48,23 @@ export const DEFAULT_PARAMETERS: UserParameters = {
   cooldown_large_days: 30,
   cooldown_small_limit: 500,
   cooldown_large_limit: 2000,
+  child_allowance_total: 2650,
+  child_allowance_share: 0.5,
+  child_allowance_day: 20,
+  payday: 25,
+  notifications_paused_until: null,
   updated_at: null,
 };
 
-export type ParamKey = keyof Omit<UserParameters, "updated_at">;
+export type ParamKey = keyof Omit<UserParameters, "updated_at" | "notifications_paused_until">;
 
-export type ParamKind = "percent" | "amount" | "int" | "hours";
+export type ParamKind = "percent" | "amount" | "int" | "hours" | "day";
 
 export interface ParamField {
   key: ParamKey;
   label: string;
   kind: ParamKind;
-  group: "skatt" | "ekonomi" | "beteende";
+  group: "skatt" | "ekonomi" | "beteende" | "rytm";
   /** Var värdet används — visas i gränssnittet så inget tal är oförklarat. */
   usedBy: string;
   hint?: string;
@@ -165,12 +176,43 @@ export const PARAM_FIELDS: ParamField[] = [
     group: "beteende",
     usedBy: "Önskelistan",
   },
+  {
+    key: "child_allowance_total",
+    label: "Barnbidrag totalt per månad",
+    kind: "amount",
+    group: "rytm",
+    usedBy: "Rytm → schemalagd inkomst den 20:e",
+    hint: "2 650 kr för två barn inklusive flerbarnstillägg.",
+  },
+  {
+    key: "child_allowance_share",
+    label: "Din andel av barnbidraget",
+    kind: "percent",
+    group: "rytm",
+    usedBy: "Rytm → schemalagd inkomst",
+    hint: "50 % vid delat bidrag och växelvis boende.",
+  },
+  {
+    key: "child_allowance_day",
+    label: "Utbetalningsdag barnbidrag",
+    kind: "day",
+    group: "rytm",
+    usedBy: "Rytm och aviseringar",
+  },
+  {
+    key: "payday",
+    label: "Lönedag",
+    kind: "day",
+    group: "rytm",
+    usedBy: "Daglig siffra, intentioner och aviseringar",
+  },
 ];
 
 export const PARAM_GROUP_LABELS: Record<ParamField["group"], string> = {
   skatt: "Skatt och regler",
   ekonomi: "Ekonomi",
   beteende: "Beteende",
+  rytm: "Rytm och familj",
 };
 
 /** Slår ihop en delvis rad från databasen med standardvärdena. */
@@ -185,6 +227,7 @@ export function withDefaults(row: Partial<UserParameters> | null | undefined): U
     }
     out[f.key] = Number(v) as never;
   }
+  out.notifications_paused_until = row.notifications_paused_until ?? null;
   out.updated_at = row.updated_at ?? null;
   return out;
 }
@@ -203,6 +246,6 @@ export function inputToParam(raw: string, f: ParamField): number | null {
   const n = Number(cleaned);
   if (!Number.isFinite(n)) return null;
   if (f.kind === "percent") return Math.round((n / 100) * 1e6) / 1e6;
-  if (f.kind === "int" || f.kind === "hours") return Math.round(n);
+  if (f.kind === "int" || f.kind === "hours" || f.kind === "day") return Math.round(n);
   return n;
 }

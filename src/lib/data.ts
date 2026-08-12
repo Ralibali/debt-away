@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Loan } from "@/lib/payoff";
+import { derivePhase } from "@/lib/rhythm";
 import {
   DEFAULT_PARAMETERS,
   PARAM_FIELDS,
@@ -37,6 +38,10 @@ export interface Transaction {
   import_hash?: string | null;
   /** Låst rad: importerad och avstämd, får inte ändras av misstag */
   is_locked?: boolean;
+  /** 'barnvecka' eller 'ensamvecka', härledd ur vårdnadsschemat */
+  phase?: string | null;
+  /** Sant när fasen satts för hand på just den här posten */
+  phase_override?: boolean;
 }
 
 export interface Budget {
@@ -168,7 +173,10 @@ export function useSaveTransaction() {
   return useMutation({
     mutationFn: async (t: Omit<Transaction, "id">) => {
       const user_id = await uid();
-      const { error } = await supabase.from("transactions").insert({ ...t, user_id } as never);
+      const phase = t.phase ?? (await derivePhase(t.occurred_at));
+      const { error } = await supabase
+        .from("transactions")
+        .insert({ ...t, phase, user_id } as never);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["transactions"] }),

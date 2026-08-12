@@ -103,6 +103,36 @@ export type Database = {
           },
         ]
       }
+      care_schedule: {
+        Row: {
+          child_days: number
+          created_at: string
+          cycle_days: number
+          cycle_start: string
+          handover_weekday: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          child_days?: number
+          created_at?: string
+          cycle_days?: number
+          cycle_start: string
+          handover_weekday?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          child_days?: number
+          created_at?: string
+          cycle_days?: number
+          cycle_start?: string
+          handover_weekday?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string | null
@@ -185,6 +215,83 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      intention_events: {
+        Row: {
+          created_at: string
+          due_on: string
+          fulfilled: boolean
+          id: string
+          intention_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_on: string
+          fulfilled?: boolean
+          id?: string
+          intention_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_on?: string
+          fulfilled?: boolean
+          id?: string
+          intention_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intention_events_intention_id_fkey"
+            columns: ["intention_id"]
+            isOneToOne: false
+            referencedRelation: "intentions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intentions: {
+        Row: {
+          action_text: string
+          active: boolean
+          created_at: string
+          fulfilled_count: number
+          id: string
+          missed_count: number
+          trigger_config: Json | null
+          trigger_text: string
+          trigger_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_text: string
+          active?: boolean
+          created_at?: string
+          fulfilled_count?: number
+          id?: string
+          missed_count?: number
+          trigger_config?: Json | null
+          trigger_text: string
+          trigger_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_text?: string
+          active?: boolean
+          created_at?: string
+          fulfilled_count?: number
+          id?: string
+          missed_count?: number
+          trigger_config?: Json | null
+          trigger_text?: string
+          trigger_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       loan_payments: {
         Row: {
@@ -334,6 +441,39 @@ export type Database = {
           },
         ]
       }
+      notification_log: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          read_at: string | null
+          sent_on: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          read_at?: string | null
+          sent_on: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          read_at?: string | null
+          sent_on?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       parameter_changes: {
         Row: {
           changed_at: string
@@ -360,6 +500,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      phase_budgets: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          phase: string
+          planned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          phase: string
+          planned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          phase?: string
+          planned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phase_budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       savings_accounts: {
         Row: {
@@ -465,6 +643,42 @@ export type Database = {
         }
         Relationships: []
       }
+      sinking_funds: {
+        Row: {
+          annual_estimate: number
+          created_at: string
+          current_balance: number
+          id: string
+          monthly_accrual: number | null
+          name: string
+          next_expected: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          annual_estimate: number
+          created_at?: string
+          current_balance?: number
+          id?: string
+          monthly_accrual?: number | null
+          name: string
+          next_expected?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          annual_estimate?: number
+          created_at?: string
+          current_balance?: number
+          id?: string
+          monthly_accrual?: number | null
+          name?: string
+          next_expected?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transaction_splits: {
         Row: {
           amount: number
@@ -523,6 +737,8 @@ export type Database = {
           is_locked: boolean
           is_recurring: boolean
           occurred_at: string
+          phase: string | null
+          phase_override: boolean
           raw_description: string | null
           source: string
           user_id: string
@@ -539,6 +755,8 @@ export type Database = {
           is_locked?: boolean
           is_recurring?: boolean
           occurred_at: string
+          phase?: string | null
+          phase_override?: boolean
           raw_description?: string | null
           source?: string
           user_id: string
@@ -555,6 +773,8 @@ export type Database = {
           is_locked?: boolean
           is_recurring?: boolean
           occurred_at?: string
+          phase?: string | null
+          phase_override?: boolean
           raw_description?: string | null
           source?: string
           user_id?: string
@@ -579,6 +799,9 @@ export type Database = {
       user_parameters: {
         Row: {
           buffer_months: number
+          child_allowance_day: number
+          child_allowance_share: number
+          child_allowance_total: number
           cooldown_large_days: number
           cooldown_large_limit: number
           cooldown_medium_days: number
@@ -590,6 +813,8 @@ export type Database = {
           isk_schablonranta: number
           kapitalskatt: number
           monthly_net_income: number | null
+          notifications_paused_until: string | null
+          payday: number
           ranteavdrag_sakerhet: number
           ranteavdrag_utan_sakerhet: number
           updated_at: string
@@ -597,6 +822,9 @@ export type Database = {
         }
         Insert: {
           buffer_months?: number
+          child_allowance_day?: number
+          child_allowance_share?: number
+          child_allowance_total?: number
           cooldown_large_days?: number
           cooldown_large_limit?: number
           cooldown_medium_days?: number
@@ -608,6 +836,8 @@ export type Database = {
           isk_schablonranta?: number
           kapitalskatt?: number
           monthly_net_income?: number | null
+          notifications_paused_until?: string | null
+          payday?: number
           ranteavdrag_sakerhet?: number
           ranteavdrag_utan_sakerhet?: number
           updated_at?: string
@@ -615,6 +845,9 @@ export type Database = {
         }
         Update: {
           buffer_months?: number
+          child_allowance_day?: number
+          child_allowance_share?: number
+          child_allowance_total?: number
           cooldown_large_days?: number
           cooldown_large_limit?: number
           cooldown_medium_days?: number
@@ -626,9 +859,41 @@ export type Database = {
           isk_schablonranta?: number
           kapitalskatt?: number
           monthly_net_income?: number | null
+          notifications_paused_until?: string | null
+          payday?: number
           ranteavdrag_sakerhet?: number
           ranteavdrag_utan_sakerhet?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          overspent_category_ids: string[]
+          phase: string
+          phase_start: string
+          planned_next: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          overspent_category_ids?: string[]
+          phase: string
+          phase_start: string
+          planned_next?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          overspent_category_ids?: string[]
+          phase?: string
+          phase_start?: string
+          planned_next?: Json
           user_id?: string
         }
         Relationships: []
