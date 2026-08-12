@@ -138,12 +138,41 @@ function isoMonth(d: Date): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-01`;
 }
 
+/** Hur många månader tills lånet är slutbetalt om hela extrabeloppet läggs här. */
+function monthsToClear(
+  entry: { loan: Loan; balance: number },
+  availableExtra: number,
+  limit = 4,
+): number {
+  let balance = entry.balance;
+  for (let m = 1; m <= limit; m++) {
+    const interest = monthlyInterest(entry.loan, balance);
+    const payment = minimumPayment(entry.loan, balance) + availableExtra;
+    const next = Math.max(0, balance + interest - payment);
+    if (next <= 0.005) return m;
+    if (next >= balance - 0.005) return Infinity;
+    balance = next;
+  }
+  return Infinity;
+}
+
 function pickTarget(
   active: { loan: Loan; balance: number }[],
-  strategy: "avalanche" | "snowball" | "baseline",
+  strategy: Strategy,
+  availableExtra: number,
 ): string | null {
   if (active.length === 0) return null;
   if (strategy === "baseline") return null;
+
+  if (strategy === "hybrid") {
+    // Ta minsta saldot först om det kan slutbetalas inom 3 månader med
+    // tillgängligt extrabelopp — en tidig avklarad rad utan nämnvärd
+    // räntekostnad. Därefter ren lavin.
+    const smallest = [...active].sort((a, b) => a.balance - b.balance)[0]!;
+    if (monthsToClear(smallest, availableExtra) <= 3) return smallest.loan.id;
+    return pickTarget(active, "avalanche", availableExtra);
+  }
+
   const sorted = [...active].sort((a, b) => {
     if (strategy === "avalanche") {
       const diff = effectiveRate(b.loan) - effectiveRate(a.loan);
