@@ -237,7 +237,7 @@ export function simulate(
     }
 
     const extraAvailable = extraPerMonth + freedMinimums;
-    const targetId = pickTarget(active, strategy, extraAvailable);
+    const targetId = pickTarget(active, strategy, extraAvailable, p);
     let extraPool = extraAvailable;
     let monthInterest = 0;
     let monthPaid = 0;
