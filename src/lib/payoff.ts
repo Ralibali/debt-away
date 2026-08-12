@@ -314,7 +314,9 @@ export function simulate(
         balances.set(loan.id, 0);
         payoffMonth.set(loan.id, m);
         order.push(loan.id);
-        freedMinimums += minimumPayment(loan, balance) + fee;
+        // Hela den stående minimibetalningen frigörs, inte bara den
+        // beskurna slutbetalningen — snöbollen ska rulla med fullt belopp.
+        freedMinimums += standingMinimum(loan, balance) + fee;
       } else {
         // Stillastående lån: betalningen täcker inte ens räntan och lånet är
         // inte mål för extraamortering → betalas aldrig av.
