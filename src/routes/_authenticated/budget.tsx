@@ -4,8 +4,10 @@ import { toast } from "sonner";
 import { useBudgets, useCategories, useSaveBudget, useSaveCategory, useTransactions } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import { kr, manad, monthStartISO } from "@/lib/format";
+import { BudgetVariance } from "@/components/charts/BudgetVariance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
