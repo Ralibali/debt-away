@@ -1,15 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
 export interface CoachRequest {
   module: "leaks" | "budget" | "friction" | "purchase" | "strategy";
-  input: unknown;
+  input: Json;
   /** true = ignorera cachen och generera om (bara på uttryckligt användarklick) */
   force?: boolean;
 }
 
 export interface CoachResponse {
-  payload: unknown;
+  payload: Json;
   cached: boolean;
   created_at: string;
   input_hash: string;
@@ -34,7 +36,7 @@ export const runCoachModule = createServerFn({ method: "POST" })
         .maybeSingle();
       if (cached) {
         return {
-          payload: cached.payload,
+          payload: cached.payload as Json,
           cached: true,
           created_at: String(cached.created_at),
           input_hash: inputHash,
@@ -45,7 +47,7 @@ export const runCoachModule = createServerFn({ method: "POST" })
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("AI-nyckeln saknas på servern.");
 
-    const payload = await callCoachModel(data.module, data.input, apiKey);
+    const payload = (await callCoachModel(data.module, data.input, apiKey)) as Json;
 
     const { error } = await supabase
       .from("ai_insights")
