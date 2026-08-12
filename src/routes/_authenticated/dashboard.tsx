@@ -84,6 +84,7 @@ function Dashboard() {
 
   const total = loans.reduce((s, l) => s + l.current_balance, 0);
   const interest = currentMonthlyInterest(loans);
+  const feeSum = loans.reduce((s, l) => s + (l.monthly_fee ?? 0), 0);
   const minSum = loans.reduce(
     (s, l) => s + minimumPayment(l, l.current_balance) + (l.monthly_fee ?? 0),
     0,
