@@ -364,3 +364,33 @@ export function useRegisterPayment() {
     },
   });
 }
+
+/** Alla registrerade betalningar — används för historiken i korspunkten. */
+export function useAllLoanPayments() {
+  return useQuery({
+    queryKey: ["loan_payments", "all"],
+    queryFn: async (): Promise<LoanPayment[]> => {
+      const { data, error } = await supabase
+        .from("loan_payments")
+        .select("*")
+        .order("paid_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((p) => ({
+        ...p,
+        amount: num(p.amount),
+        interest_part: p.interest_part == null ? null : Number(p.interest_part),
+        principal_part: p.principal_part == null ? null : Number(p.principal_part),
+      })) as LoanPayment[];
+    },
+  });
+}
+
+/** Amorterat belopp per månad (YYYY-MM-01 → kronor). */
+export function principalByMonth(payments: LoanPayment[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const p of payments) {
+    const key = `${p.paid_at.slice(0, 7)}-01`;
+    out[key] = (out[key] ?? 0) + (p.principal_part ?? 0);
+  }
+  return out;
+}
