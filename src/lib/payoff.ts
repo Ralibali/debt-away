@@ -36,6 +36,21 @@ export interface PerLoanResult {
   neverPaidOff: boolean;
 }
 
+export interface LoanPaymentRow {
+  loanId: string;
+  /** Minimibetalning inklusive månadsavgift, begränsad till vad som faktiskt betalades */
+  minimum: number;
+  /** Extraamortering utöver minimum */
+  extra: number;
+  /** Månadsavgift som ingår i minimum */
+  fee: number;
+  interest: number;
+  principal: number;
+  total: number;
+  /** Saldo efter månadens betalning */
+  balance: number;
+}
+
 export interface ScheduleRow {
   /** 1-baserat månadsindex */
   month: number;
@@ -43,11 +58,14 @@ export interface ScheduleRow {
   date: string;
   /** Saldo per lån-id vid månadens slut */
   balances: Record<string, number>;
+  /** Planerad betalning per lån-id denna månad */
+  payments: Record<string, LoanPaymentRow>;
   totalBalance: number;
   interestPaid: number;
   principalPaid: number;
   paid: number;
 }
+
 
 export type Strategy = "avalanche" | "snowball" | "hybrid" | "baseline";
 
