@@ -48,8 +48,10 @@ export interface ScheduleRow {
   paid: number;
 }
 
+export type Strategy = "avalanche" | "snowball" | "hybrid" | "baseline";
+
 export interface PayoffResult {
-  strategy: "avalanche" | "snowball" | "baseline";
+  strategy: Strategy;
   extraPerMonth: number;
   /** Antal månader tills skuldfri, null om det inte går inom 600 månader */
   months: number | null;
