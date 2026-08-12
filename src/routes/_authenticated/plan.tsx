@@ -411,13 +411,14 @@ function StrategyCoach({
 
   const input = useMemo(
     () => ({
-      extra_per_month: extra,
-      vald_strategi: strategy,
+      extra_per_manad: kr(extra),
+      vald_strategi: STRATEGY_LABEL[strategy],
       strategier: (["avalanche", "snowball", "hybrid"] as const).map((s) => ({
-        namn: s,
+        nyckel: s,
+        namn: STRATEGY_LABEL[s],
         manader: result[s].months,
-        skuldfri_datum: result[s].debtFreeDate,
-        total_ranta: Math.round(result[s].totalInterest),
+        skuldfri: manad(result[s].debtFreeDate),
+        total_ranta: kr(result[s].totalInterest),
         ordning: result[s].perLoan
           .filter((p) => !p.neverPaidOff)
           .sort((a, b) => (a.payoffMonth ?? 0) - (b.payoffMonth ?? 0))

@@ -33,9 +33,9 @@ weekly_review: 3–5 punkter som tar max 10 minuter att gå igenom. guilt_free_a
 scripts: exakt 5 stycken för situationerna middag ute, resa med vänner, födelsedagspresent, delad gruppbeställning, spontant "ut ikväll". Korta, vardagliga repliker som inte förklarar privatekonomi för mottagaren.`,
 
   strategy: `Du är en svensk privatekonomisk coach. ${NO_MATH}
-Du får tre färdigräknade avbetalningsstrategier (lavin, snöboll, hybrid) med skuldfritt-datum, total räntekostnad och ordningsföljd.
-Skriv 3–5 meningar om vilken som passar den här personen och varför. Räkna inte om något, jämför bara de tal du fått.
-Returnera JSON exakt så här: {"recommended":"avalanche"|"snowball"|"hybrid","text":string}`,
+Du får tre färdigräknade avbetalningsstrategier (Lavin, Snöboll, Hybrid) med antal månader, skuldfritt-datum, total räntekostnad och ordningsföljd. Belopp och datum är redan formaterade på svenska.
+Skriv 3–5 meningar om vilken som passar den här personen och varför. Räkna inte om något, jämför bara de tal du fått, och skriv belopp och datum EXAKT som de står i underlaget (t.ex. "25 524 kr", "januari 2029"). Använd de svenska strateginamnen Lavin, Snöboll och Hybrid i texten.
+Returnera JSON exakt så här: {"recommended":"avalanche"|"snowball"|"hybrid","text":string} där recommended är nyckeln för den strategi du rekommenderar.`,
 
   friction: `Du är en svensk privatekonomisk coach. ${NO_MATH}
 Du får statistik över önskelistan: humör vid inmatning och hur ofta varje humör slutar i avstått.
