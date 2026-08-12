@@ -79,22 +79,24 @@ export function capitalAdvice(input: CapitalInput): CapitalAdvice {
 
   let recommendation: CapitalAdvice["recommendation"];
   let message: string;
+  // Utan buffertmål går det inte att påstå att bufferten räcker.
+  const bufferLead =
+    bufferTarget > 0
+      ? "Din buffert är uppfylld."
+      : "Inget buffertmål är uträknat än — lägg in utgifter eller ett målbelopp på buffertkontot.";
 
   if (bufferStatus !== "uppfylld") {
     recommendation = "buffert";
     const kvar = Math.max(0, bufferTarget - bufferValue);
-    message =
-      bufferTarget <= 0
-        ? "Lägg in några månaders utgifter så räknas ett buffertmål fram."
-        : `Buffertmålet är ${fmt(bufferTarget)} (tre månaders utgifter) och ${fmt(
-            bufferValue,
-          )} finns på plats. Överskottet gör mest nytta i bufferten tills de sista ${fmt(
-            kvar,
-          )} är där — annars finansieras nästa oväntade utgift av kontokrediten.`;
+    message = `Buffertmålet är ${fmt(bufferTarget)} och ${fmt(
+      bufferValue,
+    )} finns på plats. Överskottet gör mest nytta i bufferten tills de sista ${fmt(
+      kvar,
+    )} är där — annars finansieras nästa oväntade utgift av kontokrediten.`;
   } else if (costliest && costliestDebtRate > Math.max(bestSavingsRate, 0)) {
     recommendation = "skuld";
     message =
-      `Din buffert är uppfylld. Ditt överskott ger mer nytta på ${costliest.name} ` +
+      `${bufferLead} Ditt överskott ger mer nytta på ${costliest.name} ` +
       `(${num(costliestDebtRate)} % effektiv ränta) än på sparkontot ` +
       `(${num(bestSavingsRate)} %)` +
       (yearlyGainIfRedirected > 0
@@ -103,14 +105,14 @@ export function capitalAdvice(input: CapitalInput): CapitalAdvice {
   } else if (costliest && costliestDebtRate < expectedReturn) {
     recommendation = "sparande";
     message =
-      `Din buffert är uppfylld. Räntan på ${costliest.name} är ${num(costliestDebtRate)} %, ` +
+      `${bufferLead} Räntan på ${costliest.name} är ${num(costliestDebtRate)} %, ` +
       `lägre än en förväntad avkastning på ${num(expectedReturn)} % — överskottet arbetar ` +
       `troligen hårdare i sparandet, med den risk det innebär.`;
   } else {
     recommendation = "sparande";
-    message =
-      "Din buffert är uppfylld och det finns ingen dyrare skuld att lösa. Överskottet går till sparandet.";
+    message = `${bufferLead} Det finns ingen dyrare skuld att lösa, så överskottet går till sparandet.`;
   }
+
 
   return {
     bufferStatus,
