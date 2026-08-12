@@ -1,14 +1,5 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { toast } from "sonner";
 import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions } from "@/lib/data";
 import { summarize } from "@/lib/budget";
@@ -16,9 +7,13 @@ import { compare, effectiveRate, monthlyChecklist } from "@/lib/payoff";
 import { kr, manad, monthStartISO, procent } from "@/lib/format";
 import { useCoach, useLatestInsight, type Json, type StrategyAdvice } from "@/lib/coach";
 import { CoachPanel } from "@/components/CoachPanel";
+import { StrategyComparison } from "@/components/charts/StrategyComparison";
+import { DebtStaircase } from "@/components/charts/DebtStaircase";
+import { InterestVsPrincipal } from "@/components/charts/InterestVsPrincipal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+
 
 type Strategy3 = "avalanche" | "snowball" | "hybrid";
 

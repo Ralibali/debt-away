@@ -91,6 +91,13 @@ function BudgetPage() {
         </div>
       </div>
 
+      <BudgetVariance
+        lines={s.lines
+          .filter((l) => l.category.kind === "utgift")
+          .map((l) => ({ name: l.category.name, planned: l.planned, actual: l.actual }))}
+      />
+
+
       {(["inkomst", "utgift"] as const).map((kind) => {
         const lines = s.lines.filter((l) => l.category.kind === kind);
         if (lines.length === 0) return null;
