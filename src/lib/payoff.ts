@@ -390,11 +390,12 @@ export function monthlyChecklist(
   loans: Loan[],
   extraPerMonth: number,
   strategy: Strategy,
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): ChecklistRow[] {
   const active = loans
     .filter((l) => l.current_balance > 0.005)
     .map((l) => ({ loan: l, balance: l.current_balance }));
-  const targetId = pickTarget(active, strategy, extraPerMonth);
+  const targetId = pickTarget(active, strategy, extraPerMonth, p);
   return active.map(({ loan, balance }) => {
     const minimum =
       Math.round((minimumPayment(loan, balance) + monthlyFee(loan)) * 100) / 100;
