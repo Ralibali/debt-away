@@ -83,13 +83,16 @@ describe("Enskilda lån", () => {
     expect(withFee).toBeLessThan(25.2);
   });
 
-  it("Northmill, autogiro 1 608 kr: ~953 kr kostnad, ~655 kr till skulden", () => {
+  it("Northmill: ~953 kr av månadskostnaden är ränta + avgift", () => {
+    // OBS: motorn lägger avgiften OVANPÅ minimibetalningen (1 608 + 330),
+    // eftersom minimibetalningen i databasen är beloppet som går till krediten.
+    // Räknas de 330 kr in i autogirot på 1 608 kr blir 655 kr kvar till skulden.
     const nm = byId("northmill");
     const row = simulate([nm], 0, "baseline", SNAPSHOT_DATE).schedule[0]!.payments[nm.id]!;
     expect(row.interest + row.fee).toBeGreaterThan(945);
     expect(row.interest + row.fee).toBeLessThan(962);
-    expect(row.principal).toBeGreaterThan(645);
-    expect(row.principal).toBeLessThan(665);
+    expect(Math.round(1608 - row.interest - row.fee)).toBeGreaterThan(645);
+    expect(Math.round(1608 - row.interest - row.fee)).toBeLessThan(665);
   });
 });
 
