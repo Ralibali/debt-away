@@ -4,8 +4,10 @@ import { toast } from "sonner";
 import { useBudgets, useCategories, useSaveBudget, useSaveCategory, useTransactions } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import { kr, manad, monthStartISO } from "@/lib/format";
+import { BudgetVariance } from "@/components/charts/BudgetVariance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
@@ -90,6 +92,13 @@ function BudgetPage() {
           </Link>
         </div>
       </div>
+
+      <BudgetVariance
+        lines={s.lines
+          .filter((l) => l.category.kind === "utgift")
+          .map((l) => ({ name: l.category.name, planned: l.planned, actual: l.actual }))}
+      />
+
 
       {(["inkomst", "utgift"] as const).map((kind) => {
         const lines = s.lines.filter((l) => l.category.kind === kind);

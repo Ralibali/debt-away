@@ -21,6 +21,7 @@ import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as AuthenticatedSparandeRouteImport } from './routes/_authenticated/sparande'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
 
 const IndexRoute = IndexRouteImport.update({
@@ -82,6 +83,11 @@ const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSparandeRoute = AuthenticatedSparandeRouteImport.update({
+  id: '/sparande',
+  path: '/sparande',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTransaktionerRoute =
   AuthenticatedTransaktionerRouteImport.update({
     id: '/transaktioner',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
 export interface FileRoutesByTo {
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
 export interface FileRoutesById {
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/_authenticated/lan': typeof AuthenticatedLanRoute
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
+  '/_authenticated/sparande': typeof AuthenticatedSparandeRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
 export interface FileRouteTypes {
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/lan'
     | '/onskelista'
     | '/plan'
+    | '/sparande'
     | '/transaktioner'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/lan'
     | '/onskelista'
     | '/plan'
+    | '/sparande'
     | '/transaktioner'
   id:
     | '__root__'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/lan'
     | '/_authenticated/onskelista'
     | '/_authenticated/plan'
+    | '/_authenticated/sparande'
     | '/_authenticated/transaktioner'
   fileRoutesById: FileRoutesById
 }
@@ -271,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/sparande': {
+      id: '/_authenticated/sparande'
+      path: '/sparande'
+      fullPath: '/sparande'
+      preLoaderRoute: typeof AuthenticatedSparandeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/transaktioner': {
       id: '/_authenticated/transaktioner'
       path: '/transaktioner'
@@ -291,6 +310,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
+  AuthenticatedSparandeRoute: typeof AuthenticatedSparandeRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
 }
 
@@ -304,6 +324,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLanRoute: AuthenticatedLanRoute,
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
+  AuthenticatedSparandeRoute: AuthenticatedSparandeRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,
 }
 
