@@ -48,8 +48,10 @@ export interface ScheduleRow {
   paid: number;
 }
 
+export type Strategy = "avalanche" | "snowball" | "hybrid" | "baseline";
+
 export interface PayoffResult {
-  strategy: "avalanche" | "snowball" | "baseline";
+  strategy: Strategy;
   extraPerMonth: number;
   /** Antal månader tills skuldfri, null om det inte går inom 600 månader */
   months: number | null;
@@ -136,12 +138,41 @@ function isoMonth(d: Date): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-01`;
 }
 
+/** Hur många månader tills lånet är slutbetalt om hela extrabeloppet läggs här. */
+function monthsToClear(
+  entry: { loan: Loan; balance: number },
+  availableExtra: number,
+  limit = 4,
+): number {
+  let balance = entry.balance;
+  for (let m = 1; m <= limit; m++) {
+    const interest = monthlyInterest(entry.loan, balance);
+    const payment = minimumPayment(entry.loan, balance) + availableExtra;
+    const next = Math.max(0, balance + interest - payment);
+    if (next <= 0.005) return m;
+    if (next >= balance - 0.005) return Infinity;
+    balance = next;
+  }
+  return Infinity;
+}
+
 function pickTarget(
   active: { loan: Loan; balance: number }[],
-  strategy: "avalanche" | "snowball" | "baseline",
+  strategy: Strategy,
+  availableExtra: number,
 ): string | null {
   if (active.length === 0) return null;
   if (strategy === "baseline") return null;
+
+  if (strategy === "hybrid") {
+    // Ta minsta saldot först om det kan slutbetalas inom 3 månader med
+    // tillgängligt extrabelopp — en tidig avklarad rad utan nämnvärd
+    // räntekostnad. Därefter ren lavin.
+    const smallest = [...active].sort((a, b) => a.balance - b.balance)[0]!;
+    if (monthsToClear(smallest, availableExtra) <= 3) return smallest.loan.id;
+    return pickTarget(active, "avalanche", availableExtra);
+  }
+
   const sorted = [...active].sort((a, b) => {
     if (strategy === "avalanche") {
       const diff = effectiveRate(b.loan) - effectiveRate(a.loan);
@@ -166,7 +197,7 @@ function pickTarget(
 export function simulate(
   loans: Loan[],
   extraPerMonth: number,
-  strategy: "avalanche" | "snowball" | "baseline",
+  strategy: Strategy,
   startDate: Date = new Date(),
 ): PayoffResult {
   const start = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
@@ -197,8 +228,9 @@ export function simulate(
       break;
     }
 
-    const targetId = pickTarget(active, strategy);
-    let extraPool = extraPerMonth + freedMinimums;
+    const extraAvailable = extraPerMonth + freedMinimums;
+    const targetId = pickTarget(active, strategy, extraAvailable);
+    let extraPool = extraAvailable;
     let monthInterest = 0;
     let monthPaid = 0;
     let monthPrincipal = 0;
@@ -296,6 +328,7 @@ export interface ComparisonResult {
   baseline: PayoffResult;
   avalanche: PayoffResult;
   snowball: PayoffResult;
+  hybrid: PayoffResult;
   chosen: PayoffResult;
   /** Sparade månader jämfört med baseline (null om baseline aldrig blir klar) */
   monthsSaved: number | null;
@@ -303,24 +336,87 @@ export interface ComparisonResult {
   interestSaved: number;
 }
 
-/** Kör baseline + båda strategierna så att UI kan visa skillnaden. */
+/** Kör baseline + alla tre strategierna så att UI kan visa skillnaden. */
 export function compare(
   loans: Loan[],
   extraPerMonth: number,
-  strategy: "avalanche" | "snowball",
+  strategy: "avalanche" | "snowball" | "hybrid",
   startDate: Date = new Date(),
 ): ComparisonResult {
   const baseline = simulate(loans, 0, "baseline", startDate);
   const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate);
   const snowball = simulate(loans, extraPerMonth, "snowball", startDate);
-  const chosen = strategy === "avalanche" ? avalanche : snowball;
+  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate);
+  const chosen =
+    strategy === "avalanche" ? avalanche : strategy === "snowball" ? snowball : hybrid;
   return {
     baseline,
     avalanche,
     snowball,
+    hybrid,
     chosen,
     monthsSaved:
       baseline.months != null && chosen.months != null ? baseline.months - chosen.months : null,
     interestSaved: Math.round((baseline.totalInterest - chosen.totalInterest) * 100) / 100,
   };
+}
+
+export interface ChecklistRow {
+  loanId: string;
+  name: string;
+  /** Minimibetalning inkl. avgift */
+  minimum: number;
+  /** Extraamortering som ska läggas på just detta lån denna månad */
+  extra: number;
+  total: number;
+  isTarget: boolean;
+  payment_day: number | null;
+}
+
+/**
+ * Månadens betalningschecklista — härledd direkt ur simuleringens första
+ * månad, aldrig ur en språkmodell.
+ */
+export function monthlyChecklist(
+  loans: Loan[],
+  extraPerMonth: number,
+  strategy: Strategy,
+): ChecklistRow[] {
+  const active = loans
+    .filter((l) => l.current_balance > 0.005)
+    .map((l) => ({ loan: l, balance: l.current_balance }));
+  const targetId = pickTarget(active, strategy, extraPerMonth);
+  return active.map(({ loan, balance }) => {
+    const minimum =
+      Math.round((minimumPayment(loan, balance) + monthlyFee(loan)) * 100) / 100;
+    const isTarget = loan.id === targetId;
+    const owed = balance + monthlyInterest(loan, balance);
+    const extra = isTarget
+      ? Math.round(Math.min(extraPerMonth, Math.max(0, owed - minimum + monthlyFee(loan))) * 100) /
+        100
+      : 0;
+    return {
+      loanId: loan.id,
+      name: loan.name,
+      minimum,
+      extra,
+      total: Math.round((minimum + extra) * 100) / 100,
+      isTarget,
+      payment_day: loan.payment_day,
+    };
+  });
+}
+
+/** Lån med revolverande kredit och positiv effektiv ränta. */
+export function revolvingWithInterest(loans: Loan[]): Loan[] {
+  return loans.filter(
+    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l) > 0,
+  );
+}
+
+/** Lånet med högst effektiv ränta (och saldo kvar). */
+export function highestRateLoan(loans: Loan[]): Loan | null {
+  const withBalance = loans.filter((l) => l.current_balance > 0.005);
+  if (withBalance.length === 0) return null;
+  return [...withBalance].sort((a, b) => effectiveRate(b) - effectiveRate(a))[0]!;
 }

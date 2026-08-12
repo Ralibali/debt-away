@@ -1,5 +1,5 @@
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
-import { BarChart3, Landmark, Target, PiggyBank, Receipt, LogOut } from "lucide-react";
+import { BarChart3, Landmark, Target, PiggyBank, Receipt, Sparkles, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
@@ -8,6 +8,7 @@ const NAV = [
   { to: "/plan", label: "Plan", icon: Target },
   { to: "/budget", label: "Budget", icon: PiggyBank },
   { to: "/transaktioner", label: "Trans.", icon: Receipt },
+  { to: "/coach", label: "Coach", icon: Sparkles },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -50,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto max-w-5xl px-3 pb-24 pt-3 md:pb-10">{children ?? <Outlet />}</main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-6">
           {NAV.map((n) => (
             <Link
               key={n.to}

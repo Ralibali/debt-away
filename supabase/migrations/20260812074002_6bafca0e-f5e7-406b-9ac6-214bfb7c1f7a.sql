@@ -1,0 +1,1 @@
+revoke execute on function public.wishlist_enforce_cooldown() from public, anon, authenticated;

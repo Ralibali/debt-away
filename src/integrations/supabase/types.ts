@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_insights: {
+        Row: {
+          created_at: string | null
+          id: string
+          input_hash: string
+          module: string
+          payload: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          input_hash: string
+          module: string
+          payload: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          input_hash?: string
+          module?: string
+          payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       budgets: {
         Row: {
           category_id: string
@@ -284,6 +311,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      wishlist: {
+        Row: {
+          added_at: string | null
+          cooldown_until: string
+          decided_at: string | null
+          decision: string | null
+          id: string
+          item: string
+          mood: string | null
+          price: number
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          cooldown_until: string
+          decided_at?: string | null
+          decision?: string | null
+          id?: string
+          item: string
+          mood?: string | null
+          price: number
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          cooldown_until?: string
+          decided_at?: string | null
+          decision?: string | null
+          id?: string
+          item?: string
+          mood?: string | null
+          price?: number
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
