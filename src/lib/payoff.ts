@@ -206,6 +206,7 @@ export function simulate(
   extraPerMonth: number,
   strategy: Strategy,
   startDate: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): PayoffResult {
   const start = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
   const balances = new Map<string, number>();
