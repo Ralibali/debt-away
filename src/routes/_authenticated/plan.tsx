@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions, useParameters } from "@/lib/data";
+import { useBudgets, useCategories, useLoans, useTransactions, useParameters } from "@/lib/data";
+import { ScenarioLibrary } from "@/components/ScenarioLibrary";
 import { summarize } from "@/lib/budget";
 import { compare, effectiveRate, monthlyChecklist } from "@/lib/payoff";
 import { kr, manad, monthStartISO, procent } from "@/lib/format";
@@ -57,7 +58,6 @@ function PlanPage() {
   const { data: params } = useParameters();
   const [extra, setExtra] = useState(extraFromSearch ?? 1000);
   const [strategy, setStrategy] = useState<Strategy3>("avalanche");
-  const [scenarioName, setScenarioName] = useState("");
 
   const month = monthStartISO();
   const { data: categories = [] } = useCategories();
@@ -65,9 +65,6 @@ function PlanPage() {
   const { data: transactions = [] } = useTransactions(month, null);
   const surplus = summarize(categories, budgets, transactions).plannedSurplus;
 
-  const { data: scenarios = [] } = useScenarios();
-  const saveScenario = useSaveScenario();
-  const delScenario = useDeleteScenario();
 
   const result = useMemo(
     () => compare(loans, extra, strategy, new Date(), params),
@@ -294,60 +291,17 @@ function PlanPage() {
         )}
       </div>
 
-      <div className="panel space-y-2 p-3">
-        <div className="label-xs">Spara scenario</div>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Namn, t.ex. 'Extra 2000 avalanche'"
-            value={scenarioName}
-            onChange={(e) => setScenarioName(e.target.value)}
-          />
-          <Button
-            onClick={async () => {
-              if (!scenarioName.trim()) {
-                toast.error("Ange ett namn");
-                return;
-              }
-              await saveScenario.mutateAsync({
-                name: scenarioName.trim(),
-                extra_per_month: extra,
-                strategy,
-              });
-              setScenarioName("");
-              toast.success("Scenario sparat");
-            }}
-          >
-            Spara
-          </Button>
-        </div>
-        {scenarios.length > 0 && (
-          <ul className="divide-y divide-border/60 text-sm">
-            {scenarios.map((s) => (
-              <li key={s.id} className="flex items-center justify-between py-1.5">
-                <button
-                  className="text-left"
-                  onClick={() => {
-                    setExtra(Number(s.extra_per_month));
-                    setStrategy(s.strategy as Strategy3);
-                  }}
-                >
-                  <span className="font-medium">{s.name}</span>
-                  <span className="num ml-2 text-xs text-muted-foreground">
-                    {kr(Number(s.extra_per_month))}/mån ·{" "}
-                    {STRATEGY_LABEL[s.strategy as Strategy3] ?? s.strategy}
-                  </span>
-                </button>
-                <button
-                  className="text-xs text-muted-foreground hover:text-destructive"
-                  onClick={() => delScenario.mutate(s.id)}
-                >
-                  Ta bort
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <ScenarioLibrary
+        loans={loans}
+        params={params}
+        extra={extra}
+        strategy={strategy}
+        onLoad={(e, s) => {
+          setExtra(e);
+          setStrategy(s);
+        }}
+      />
+
     </div>
   );
 }
