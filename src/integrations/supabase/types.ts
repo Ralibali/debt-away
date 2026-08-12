@@ -234,6 +234,83 @@ export type Database = {
         }
         Relationships: []
       }
+      savings_accounts: {
+        Row: {
+          created_at: string | null
+          current_value: number
+          id: string
+          interest_rate: number | null
+          is_buffer: boolean
+          kind: string
+          name: string
+          provider: string | null
+          target_value: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_value?: number
+          id?: string
+          interest_rate?: number | null
+          is_buffer?: boolean
+          kind: string
+          name: string
+          provider?: string | null
+          target_value?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_value?: number
+          id?: string
+          interest_rate?: number | null
+          is_buffer?: boolean
+          kind?: string
+          name?: string
+          provider?: string | null
+          target_value?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      savings_snapshots: {
+        Row: {
+          account_id: string
+          created_at: string | null
+          deposits_since_last: number
+          id: string
+          snapshot_date: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          account_id: string
+          created_at?: string | null
+          deposits_since_last?: number
+          id?: string
+          snapshot_date: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          account_id?: string
+          created_at?: string | null
+          deposits_since_last?: number
+          id?: string
+          snapshot_date?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "savings_snapshots_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "savings_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scenarios: {
         Row: {
           created_at: string | null
