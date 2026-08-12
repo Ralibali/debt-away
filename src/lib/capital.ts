@@ -44,10 +44,13 @@ export function capitalAdvice(input: CapitalInput): CapitalAdvice {
   const { loans, savings, avgMonthlyExpenses, monthlySurplus } = input;
   const expectedReturn = input.expectedReturn ?? 7;
 
-  const bufferTarget = Math.round(avgMonthlyExpenses * 3);
-  const bufferValue = savings
-    .filter((s) => s.is_buffer || s.kind === "buffert")
-    .reduce((sum, s) => sum + s.current_value, 0);
+  const bufferAccounts = savings.filter((s) => s.is_buffer || s.kind === "buffert");
+  // Tre månaders utgifter är förstahandsmålet. Saknas utgiftsdata används
+  // målbeloppen som satts manuellt på buffertkontona.
+  const targetFromAccounts = bufferAccounts.reduce((sum, s) => sum + (s.target_value ?? 0), 0);
+  const bufferTarget = Math.round(avgMonthlyExpenses * 3) || Math.round(targetFromAccounts);
+  const bufferValue = bufferAccounts.reduce((sum, s) => sum + s.current_value, 0);
+
 
   const bufferStatus: BufferStatus =
     bufferTarget <= 0 || bufferValue >= bufferTarget
