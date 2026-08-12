@@ -268,13 +268,14 @@ export function useWishlist() {
 
 export function useAddWish() {
   const qc = useQueryClient();
+  const { data: params = DEFAULT_PARAMETERS } = useParameters();
   return useMutation({
     mutationFn: async (w: { item: string; price: number; url: string | null; mood: string | null }) => {
       const user_id = await uid();
       const { error } = await supabase.from("wishlist").insert({
         ...w,
         user_id,
-        cooldown_until: cooldownUntil(w.price),
+        cooldown_until: cooldownUntil(w.price, new Date(), params),
       } as never);
       if (error) throw error;
     },
