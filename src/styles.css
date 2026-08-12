@@ -5,15 +5,25 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Designsystem — mörkt, datatätt gränssnitt för privatekonomi.
- * Alla färger i oklch. Använd semantiska tokens, aldrig hårdkodade färger.
+ * Designsystem — ljust, svalt och tätt. Ett instrument, inte en landningssida.
+ * Alla färger är tokens. Skriv aldrig hårdkodade färger i komponenter.
+ *
+ * Grundpalett (oklch-ekvivalenter till de exakta hexvärdena):
+ *   ground  #EEF1F4  sidbakgrund
+ *   surface #FFFFFF  kort och paneler
+ *   line    #D5DBE1  1px avdelare
+ *   ink     #16191D  primärtext
+ *   ink-mut #5C666F  etiketter
+ *   debt    #7A2E3C  skuld — pengar som lämnar
+ *   saving  #1F5D5A  sparande — pengar som stannar
+ *   signal  #C97B2C  enda accenten, max två per skärm
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 3px);
-  --radius-md: calc(var(--radius) - 1px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 2px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -34,6 +44,9 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-debt: var(--debt);
+  --color-saving: var(--saving);
+  --color-signal: var(--signal);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -51,48 +64,65 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans:
-    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-13: 0.8125rem;
+  --text-13--line-height: 1.15rem;
+  --text-15: 0.9375rem;
+  --text-15--line-height: 1.35rem;
+  --text-18: 1.125rem;
+  --text-18--line-height: 1.55rem;
+  --text-24: 1.5rem;
+  --text-24--line-height: 1.9rem;
+  --text-40: 2.5rem;
+  --text-40--line-height: 2.7rem;
+  --text-64: 4rem;
+  --text-64--line-height: 4.1rem;
+  --spacing: 0.25rem;
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.17 0.015 250);
-  --foreground: oklch(0.95 0.008 250);
-  --card: oklch(0.215 0.018 252);
-  --card-foreground: oklch(0.95 0.008 250);
-  --popover: oklch(0.215 0.018 252);
-  --popover-foreground: oklch(0.95 0.008 250);
-  --primary: oklch(0.78 0.16 165);
-  --primary-foreground: oklch(0.18 0.03 165);
-  --secondary: oklch(0.27 0.02 252);
-  --secondary-foreground: oklch(0.95 0.008 250);
-  --muted: oklch(0.25 0.018 252);
-  --muted-foreground: oklch(0.68 0.02 253);
-  --accent: oklch(0.3 0.03 252);
-  --accent-foreground: oklch(0.96 0.008 250);
-  --destructive: oklch(0.63 0.2 22);
-  --destructive-foreground: oklch(0.98 0.005 250);
-  --success: oklch(0.75 0.15 160);
-  --success-foreground: oklch(0.18 0.03 160);
-  --warning: oklch(0.8 0.15 78);
-  --warning-foreground: oklch(0.2 0.04 78);
-  --border: oklch(0.3 0.02 252);
-  --input: oklch(0.3 0.02 252);
-  --ring: oklch(0.78 0.16 165);
-  --chart-1: oklch(0.78 0.16 165);
-  --chart-2: oklch(0.72 0.14 240);
-  --chart-3: oklch(0.8 0.15 78);
-  --chart-4: oklch(0.68 0.18 20);
-  --chart-5: oklch(0.72 0.13 305);
-  --sidebar: oklch(0.19 0.016 252);
-  --sidebar-foreground: oklch(0.95 0.008 250);
-  --sidebar-primary: oklch(0.78 0.16 165);
-  --sidebar-primary-foreground: oklch(0.18 0.03 165);
-  --sidebar-accent: oklch(0.27 0.02 252);
-  --sidebar-accent-foreground: oklch(0.96 0.008 250);
-  --sidebar-border: oklch(0.3 0.02 252);
-  --sidebar-ring: oklch(0.78 0.16 165);
+  --radius: 6px;
+  --background: oklch(0.9567 0.0052 247.88);
+  --foreground: oklch(0.212 0.0092 255.61);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.212 0.0092 255.61);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.212 0.0092 255.61);
+  --primary: oklch(0.6534 0.1323 61.43);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.9567 0.0052 247.88);
+  --secondary-foreground: oklch(0.212 0.0092 255.61);
+  --muted: oklch(0.9567 0.0052 247.88);
+  --muted-foreground: oklch(0.5049 0.0189 245.33);
+  --accent: oklch(0.9567 0.0052 247.88);
+  --accent-foreground: oklch(0.212 0.0092 255.61);
+  --destructive: oklch(0.4138 0.1064 11.77);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.4382 0.0626 190.61);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.6534 0.1323 61.43);
+  --warning-foreground: oklch(1 0 0);
+  --debt: oklch(0.4138 0.1064 11.77);
+  --saving: oklch(0.4382 0.0626 190.61);
+  --signal: oklch(0.6534 0.1323 61.43);
+  --border: oklch(0.8886 0.0105 247.94);
+  --input: oklch(0.8886 0.0105 247.94);
+  --ring: oklch(0.6534 0.1323 61.43);
+  --chart-1: oklch(0.4138 0.1064 11.77);
+  --chart-2: oklch(0.4382 0.0626 190.61);
+  --chart-3: oklch(0.6534 0.1323 61.43);
+  --chart-4: oklch(0.5049 0.0189 245.33);
+  --chart-5: oklch(0.8886 0.0105 247.94);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.212 0.0092 255.61);
+  --sidebar-primary: oklch(0.6534 0.1323 61.43);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.9567 0.0052 247.88);
+  --sidebar-accent-foreground: oklch(0.212 0.0092 255.61);
+  --sidebar-border: oklch(0.8886 0.0105 247.94);
+  --sidebar-ring: oklch(0.6534 0.1323 61.43);
 }
 
 @layer base {
@@ -101,40 +131,93 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: var(--text-15);
+    line-height: 1.4;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Datatäthet: alla siffror ska linjera */
-  body,
-  table,
-  input,
-  button {
+  /* Synlig tangentbordsfokus på allt interaktivt */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  table {
     font-variant-numeric: tabular-nums;
   }
 }
 
+/* Data: alla belopp i tabeller och diagram */
 @utility num {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-weight: 400;
   letter-spacing: -0.01em;
 }
 
+/* Stora tal och rubriker */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kort: yta, 1px linje, radie 6, ingen skugga */
 @utility panel {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
 }
 
 @utility label-xs {
-  font-size: 0.6875rem;
-  line-height: 1rem;
+  font-size: var(--text-13);
+  line-height: 1.15rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-muted-foreground);
+}
+
+/* Rörelse: linjer ritas in en gång, siffror räknar upp. Inget annat. */
+@keyframes draw-in {
+  from {
+    stroke-dashoffset: var(--draw-length, 1200);
+    opacity: 0.2;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@utility chart-draw {
+  & .recharts-layer path.recharts-curve {
+    animation: draw-in 600ms ease-out both;
+    stroke-dasharray: var(--draw-length, 1200);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
