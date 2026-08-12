@@ -260,16 +260,22 @@ export function simulate(
     let monthInterest = 0;
     let monthPaid = 0;
     let monthPrincipal = 0;
+    const monthPayments: Record<string, LoanPaymentRow> = {};
 
     for (const { loan, balance } of active) {
       const interest = monthlyInterest(loan, balance);
-      let payment = minimumPayment(loan, balance) + monthlyFee(loan);
+      const fee = monthlyFee(loan);
+      const base = minimumPayment(loan, balance) + fee;
+      let payment = base;
       if (loan.id === targetId) payment += extraPool;
 
       const owed = balance + interest;
-      const applied = Math.min(payment, owed + monthlyFee(loan));
+      const cap = owed + fee;
+      const applied = Math.min(payment, cap);
+      const baseApplied = Math.min(base, cap);
+      const extraApplied = Math.max(0, applied - baseApplied);
       // Avgiften går inte till skulden
-      const toDebt = Math.max(0, Math.min(applied - monthlyFee(loan), owed));
+      const toDebt = Math.max(0, Math.min(applied - fee, owed));
       const newBalance = Math.max(0, owed - toDebt);
 
       if (loan.id === targetId) extraPool = 0;
@@ -281,11 +287,22 @@ export function simulate(
       totalInterest += interest;
       totalPaid += applied;
 
+      monthPayments[loan.id] = {
+        loanId: loan.id,
+        minimum: round2(baseApplied),
+        extra: round2(extraApplied),
+        fee: round2(Math.min(fee, applied)),
+        interest: round2(interest),
+        principal: round2(Math.max(0, balance - newBalance)),
+        total: round2(applied),
+        balance: round2(newBalance),
+      };
+
       if (newBalance <= 0.005) {
         balances.set(loan.id, 0);
         payoffMonth.set(loan.id, m);
         order.push(loan.id);
-        freedMinimums += minimumPayment(loan, balance) + monthlyFee(loan);
+        freedMinimums += minimumPayment(loan, balance) + fee;
       } else {
         // Stillastående lån: betalningen täcker inte ens räntan och lånet är
         // inte mål för extraamortering → betalas aldrig av.
@@ -308,11 +325,13 @@ export function simulate(
       month: m,
       date: isoMonth(addMonths(start, m - 1)),
       balances: snapshot,
+      payments: monthPayments,
       totalBalance: Math.round(total * 100) / 100,
       interestPaid: Math.round(monthInterest * 100) / 100,
       principalPaid: Math.round(monthPrincipal * 100) / 100,
       paid: Math.round(monthPaid * 100) / 100,
     });
+
 
     const remaining = loans.filter((l) => (balances.get(l.id) ?? 0) > 0.005);
     if (remaining.length === 0) {
