@@ -238,8 +238,9 @@ function SavingsPage() {
                 <dt className="label-xs">Buffert</dt>
                 <dd className="num mt-1 text-15">{kr(advice.bufferValue)}</dd>
                 <dd className="text-13 text-muted-foreground">
-                  mål {kr(advice.bufferTarget)}
+                  mål {advice.bufferTarget > 0 ? kr(advice.bufferTarget) : "–"}
                 </dd>
+
               </div>
               <div>
                 <dt className="label-xs">Dyraste skuld</dt>

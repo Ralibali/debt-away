@@ -207,8 +207,11 @@ function Dashboard() {
             <div className="mt-4 flex flex-wrap gap-4 text-13 text-muted-foreground">
               <span>
                 Buffert <span className="num">{kr(advice.bufferValue)}</span> av{" "}
-                <span className="num">{kr(advice.bufferTarget)}</span>
+                <span className="num">
+                  {advice.bufferTarget > 0 ? kr(advice.bufferTarget) : "–"}
+                </span>
               </span>
+
               <Link to="/sparande" className="underline underline-offset-4">
                 Sparande och avstämning
               </Link>
