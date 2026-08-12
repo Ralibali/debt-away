@@ -35,8 +35,10 @@ describe("Nuläge", () => {
     expect(Math.round(interestTotal + feesTotal)).toBe(7038);
     expect(Math.round((interestTotal + feesTotal) * 12)).toBe(84456);
   });
-  it("summa minimibetalningar ~13 470 kr/mån", () =>
-    expect(minsTotal).toBeGreaterThan(13460) && expect(minsTotal).toBeLessThan(13480));
+  it("summa minimibetalningar ~13 470 kr/mån", () => {
+    expect(minsTotal).toBeGreaterThan(13460);
+    expect(minsTotal).toBeLessThan(13480);
+  });
   it("därav ~6 432 kr till skulden", () =>
     expect(Math.round(minsTotal - interestTotal - feesTotal)).toBe(6432));
 });
