@@ -238,7 +238,82 @@ function PlanPage() {
         </table>
       </div>
 
+      <div className="panel overflow-hidden">
+        <div className="label-xs px-3 pt-3">Strategijämförelse vid {kr(extra)}/mån extra</div>
+        <div className="overflow-x-auto">
+          <table className="mt-2 w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-1.5 font-medium">Strategi</th>
+                <th className="px-3 py-1.5 text-right font-medium">Skuldfri</th>
+                <th className="px-3 py-1.5 text-right font-medium">Månader</th>
+                <th className="px-3 py-1.5 text-right font-medium">Total ränta</th>
+                <th className="px-3 py-1.5 text-right font-medium">Mot utan extra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(["avalanche", "snowball", "hybrid"] as const).map((s) => {
+                const r = result[s];
+                const diff = baseline.totalInterest - r.totalInterest;
+                const monthsDiff =
+                  baseline.months != null && r.months != null ? baseline.months - r.months : null;
+                return (
+                  <tr
+                    key={s}
+                    className={`border-b border-border/60 last:border-0 ${
+                      strategy === s ? "bg-primary/5" : ""
+                    }`}
+                  >
+                    <td className="px-3 py-2">
+                      <button className="text-left" onClick={() => setStrategy(s)}>
+                        <span className="font-medium">{STRATEGY_LABEL[s]}</span>
+                        {strategy === s && (
+                          <span className="ml-1.5 rounded bg-primary/15 px-1 text-[0.65rem] text-primary">
+                            vald
+                          </span>
+                        )}
+                        <div className="text-[0.7rem] text-muted-foreground">
+                          {STRATEGY_HINT[s]}
+                        </div>
+                      </button>
+                    </td>
+                    <td className="num px-3 py-2 text-right">
+                      {r.debtFreeDate ? manad(r.debtFreeDate) : "–"}
+                    </td>
+                    <td className="num px-3 py-2 text-right">{r.months ?? "–"}</td>
+                    <td className="num px-3 py-2 text-right font-medium">{kr(r.totalInterest)}</td>
+                    <td className="num px-3 py-2 text-right text-primary">
+                      {diff > 0 ? `−${kr(diff)}` : "±0 kr"}
+                      {monthsDiff != null && monthsDiff > 0 && (
+                        <div className="text-[0.7rem] text-muted-foreground">
+                          {monthsDiff} mån tidigare
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              <tr className="border-t border-border">
+                <td className="px-3 py-2">
+                  <span className="font-medium">Utan extra</span>
+                  <div className="text-[0.7rem] text-muted-foreground">Endast minimibetalningar</div>
+                </td>
+                <td className="num px-3 py-2 text-right">
+                  {baseline.debtFreeDate ? manad(baseline.debtFreeDate) : "–"}
+                </td>
+                <td className="num px-3 py-2 text-right">{baseline.months ?? "–"}</td>
+                <td className="num px-3 py-2 text-right font-medium">
+                  {kr(baseline.totalInterest)}
+                </td>
+                <td className="num px-3 py-2 text-right text-muted-foreground">referens</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <StrategyComparison result={result} />
+
 
       <DebtStaircase result={chosen} />
 
