@@ -6,7 +6,9 @@ import {
   useCategories,
   useLoans,
   principalByMonth,
-  useTransactions,, useParameters } from "@/lib/data";
+  useTransactions,
+  useParameters,
+} from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import {
   currentMonthlyInterest,
