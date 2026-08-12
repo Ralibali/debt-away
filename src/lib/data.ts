@@ -245,6 +245,23 @@ export function useSaveScenario() {
   });
 }
 
+export function useUpdateScenario() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (s: {
+      id: string;
+      name?: string;
+      extra_per_month?: number;
+      strategy?: string;
+    }) => {
+      const { id, ...rest } = s;
+      const { error } = await supabase.from("scenarios").update(rest as never).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["scenarios"] }),
+  });
+}
+
 export function useDeleteScenario() {
   const qc = useQueryClient();
   return useMutation({
