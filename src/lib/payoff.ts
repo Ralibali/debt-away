@@ -36,6 +36,8 @@ export interface PerLoanResult {
   neverPaidOff: boolean;
 }
 
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 export interface LoanPaymentRow {
   loanId: string;
   /** Minimibetalning inklusive månadsavgift, begränsad till vad som faktiskt betalades */
