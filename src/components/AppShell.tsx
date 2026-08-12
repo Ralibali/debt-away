@@ -62,7 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 md:pb-12">{children ?? <Outlet />}</main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card md:hidden">
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-8">
           {NAV.map((n) => (
             <Link
               key={n.to}
