@@ -350,11 +350,12 @@ export function compare(
   extraPerMonth: number,
   strategy: "avalanche" | "snowball" | "hybrid",
   startDate: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): ComparisonResult {
-  const baseline = simulate(loans, 0, "baseline", startDate);
-  const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate);
-  const snowball = simulate(loans, extraPerMonth, "snowball", startDate);
-  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate);
+  const baseline = simulate(loans, 0, "baseline", startDate, p);
+  const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate, p);
+  const snowball = simulate(loans, extraPerMonth, "snowball", startDate, p);
+  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate, p);
   const chosen =
     strategy === "avalanche" ? avalanche : strategy === "snowball" ? snowball : hybrid;
   return {
