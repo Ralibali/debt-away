@@ -319,6 +319,9 @@ function PlanPage() {
 
       <InterestVsPrincipal result={chosen} />
 
+      <PaymentSchedule result={chosen} loans={loans} />
+
+
 
       <div className="panel overflow-hidden">
         <div className="label-xs px-3 pt-3">Ordningsföljd</div>
