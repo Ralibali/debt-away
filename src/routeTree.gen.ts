@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
+import { Route as AuthenticatedBudgetplanRouteImport } from './routes/_authenticated/budgetplan'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
@@ -37,6 +38,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
   id: '/budget',
   path: '/budget',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBudgetplanRoute = AuthenticatedBudgetplanRouteImport.update({
+  id: '/budgetplan',
+  path: '/budgetplan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/lackor': typeof AuthenticatedLackorRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/lackor': typeof AuthenticatedLackorRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
+  '/_authenticated/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/budget'
+    | '/budgetplan'
     | '/coach'
     | '/dashboard'
     | '/lackor'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/budget'
+    | '/budgetplan'
     | '/coach'
     | '/dashboard'
     | '/lackor'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/budget'
+    | '/_authenticated/budgetplan'
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
     | '/_authenticated/lackor'
@@ -177,6 +189,13 @@ declare module '@tanstack/react-router' {
       path: '/budget'
       fullPath: '/budget'
       preLoaderRoute: typeof AuthenticatedBudgetRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/budgetplan': {
+      id: '/_authenticated/budgetplan'
+      path: '/budgetplan'
+      fullPath: '/budgetplan'
+      preLoaderRoute: typeof AuthenticatedBudgetplanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/coach': {
@@ -226,6 +245,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
+  AuthenticatedBudgetplanRoute: typeof AuthenticatedBudgetplanRoute
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
@@ -236,6 +256,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
+  AuthenticatedBudgetplanRoute: AuthenticatedBudgetplanRoute,
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
