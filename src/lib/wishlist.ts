@@ -1,5 +1,7 @@
 /** Impulsbroms — kylregler, humörstatistik och beslutsblad. Ingen AI. */
 
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
+
 export type Mood = "stress" | "tristess" | "firande" | "belöning" | "behov";
 export type Decision = "köpt" | "avstått" | "väntar";
 
@@ -17,22 +19,31 @@ export interface WishlistItem {
   decided_at: string | null;
 }
 
-/** Kylperiod i dagar, satt av priset. Under 500 → 48 h, 500–2 000 → 7 d, över → 30 d. */
-export function cooldownDays(price: number): number {
-  if (price < 500) return 2;
-  if (price <= 2000) return 7;
-  return 30;
+/** Kylperiod i timmar, satt av priset och användarens egna gränser. */
+export function cooldownHours(price: number, p: UserParameters = DEFAULT_PARAMETERS): number {
+  if (price < p.cooldown_small_limit) return p.cooldown_small_hours;
+  if (price <= p.cooldown_large_limit) return p.cooldown_medium_days * 24;
+  return p.cooldown_large_days * 24;
 }
 
-export function cooldownUntil(price: number, from: Date = new Date()): string {
+/** Kylperiod i hela dagar (uppåtavrundat) — används för datumgränsen. */
+export function cooldownDays(price: number, p: UserParameters = DEFAULT_PARAMETERS): number {
+  return Math.max(1, Math.ceil(cooldownHours(price, p) / 24));
+}
+
+export function cooldownUntil(
+  price: number,
+  from: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
+): string {
   const d = new Date(from.getTime());
-  d.setDate(d.getDate() + cooldownDays(price));
+  d.setDate(d.getDate() + cooldownDays(price, p));
   return d.toISOString().slice(0, 10);
 }
 
-export function cooldownLabel(price: number): string {
-  const d = cooldownDays(price);
-  return d === 2 ? "48 timmar" : `${d} dagar`;
+export function cooldownLabel(price: number, p: UserParameters = DEFAULT_PARAMETERS): string {
+  const h = cooldownHours(price, p);
+  return h < 48 ? `${h} timmar` : h === 48 ? "48 timmar" : `${Math.round(h / 24)} dagar`;
 }
 
 export function isCoolingDown(item: WishlistItem, today: Date = new Date()): boolean {
