@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions, useParameters } from "@/lib/data";
+import { useBudgets, useCategories, useLoans, useTransactions, useParameters } from "@/lib/data";
+import { ScenarioLibrary } from "@/components/ScenarioLibrary";
 import { summarize } from "@/lib/budget";
 import { compare, effectiveRate, monthlyChecklist } from "@/lib/payoff";
 import { kr, manad, monthStartISO, procent } from "@/lib/format";
