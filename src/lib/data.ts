@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Loan } from "@/lib/payoff";
+import {
+  DEFAULT_PARAMETERS,
+  PARAM_FIELDS,
+  withDefaults,
+  type UserParameters,
+} from "@/lib/parameters";
 
 export interface Account {
   id: string;
