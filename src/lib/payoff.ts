@@ -328,6 +328,7 @@ export interface ComparisonResult {
   baseline: PayoffResult;
   avalanche: PayoffResult;
   snowball: PayoffResult;
+  hybrid: PayoffResult;
   chosen: PayoffResult;
   /** Sparade månader jämfört med baseline (null om baseline aldrig blir klar) */
   monthsSaved: number | null;
@@ -335,24 +336,87 @@ export interface ComparisonResult {
   interestSaved: number;
 }
 
-/** Kör baseline + båda strategierna så att UI kan visa skillnaden. */
+/** Kör baseline + alla tre strategierna så att UI kan visa skillnaden. */
 export function compare(
   loans: Loan[],
   extraPerMonth: number,
-  strategy: "avalanche" | "snowball",
+  strategy: "avalanche" | "snowball" | "hybrid",
   startDate: Date = new Date(),
 ): ComparisonResult {
   const baseline = simulate(loans, 0, "baseline", startDate);
   const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate);
   const snowball = simulate(loans, extraPerMonth, "snowball", startDate);
-  const chosen = strategy === "avalanche" ? avalanche : snowball;
+  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate);
+  const chosen =
+    strategy === "avalanche" ? avalanche : strategy === "snowball" ? snowball : hybrid;
   return {
     baseline,
     avalanche,
     snowball,
+    hybrid,
     chosen,
     monthsSaved:
       baseline.months != null && chosen.months != null ? baseline.months - chosen.months : null,
     interestSaved: Math.round((baseline.totalInterest - chosen.totalInterest) * 100) / 100,
   };
+}
+
+export interface ChecklistRow {
+  loanId: string;
+  name: string;
+  /** Minimibetalning inkl. avgift */
+  minimum: number;
+  /** Extraamortering som ska läggas på just detta lån denna månad */
+  extra: number;
+  total: number;
+  isTarget: boolean;
+  payment_day: number | null;
+}
+
+/**
+ * Månadens betalningschecklista — härledd direkt ur simuleringens första
+ * månad, aldrig ur en språkmodell.
+ */
+export function monthlyChecklist(
+  loans: Loan[],
+  extraPerMonth: number,
+  strategy: Strategy,
+): ChecklistRow[] {
+  const active = loans
+    .filter((l) => l.current_balance > 0.005)
+    .map((l) => ({ loan: l, balance: l.current_balance }));
+  const targetId = pickTarget(active, strategy, extraPerMonth);
+  return active.map(({ loan, balance }) => {
+    const minimum =
+      Math.round((minimumPayment(loan, balance) + monthlyFee(loan)) * 100) / 100;
+    const isTarget = loan.id === targetId;
+    const owed = balance + monthlyInterest(loan, balance);
+    const extra = isTarget
+      ? Math.round(Math.min(extraPerMonth, Math.max(0, owed - minimum + monthlyFee(loan))) * 100) /
+        100
+      : 0;
+    return {
+      loanId: loan.id,
+      name: loan.name,
+      minimum,
+      extra,
+      total: Math.round((minimum + extra) * 100) / 100,
+      isTarget,
+      payment_day: loan.payment_day,
+    };
+  });
+}
+
+/** Lån med revolverande kredit och positiv effektiv ränta. */
+export function revolvingWithInterest(loans: Loan[]): Loan[] {
+  return loans.filter(
+    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l) > 0,
+  );
+}
+
+/** Lånet med högst effektiv ränta (och saldo kvar). */
+export function highestRateLoan(loans: Loan[]): Loan | null {
+  const withBalance = loans.filter((l) => l.current_balance > 0.005);
+  if (withBalance.length === 0) return null;
+  return [...withBalance].sort((a, b) => effectiveRate(b) - effectiveRate(a))[0]!;
 }
