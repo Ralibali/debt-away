@@ -49,13 +49,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </nav>
-          <button
-            onClick={signOut}
-            className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Logga ut"
-          >
-            <LogOut className="size-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <Link
+              to="/parametrar"
+              className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+              aria-label="Parametrar"
+            >
+              <SlidersHorizontal className="size-4" />
+            </Link>
+            <button
+              onClick={signOut}
+              className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Logga ut"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </div>
         </div>
       </header>
 
