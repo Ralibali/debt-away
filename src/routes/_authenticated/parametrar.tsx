@@ -39,12 +39,13 @@ export const Route = createFileRoute("/_authenticated/parametrar")({
   component: ParametersPage,
 });
 
-const GROUPS: ParamField["group"][] = ["skatt", "ekonomi", "beteende"];
+const GROUPS: ParamField["group"][] = ["rytm", "skatt", "ekonomi", "beteende"];
 
 function suffix(f: ParamField): string {
   if (f.kind === "percent") return "%";
   if (f.kind === "amount") return "kr";
   if (f.kind === "hours") return "h";
+  if (f.kind === "day") return "dag i mån.";
   return "";
 }
 

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAvstamningRouteImport } from './routes/_authenticated/avstamning'
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
 import { Route as AuthenticatedBudgetplanRouteImport } from './routes/_authenticated/budgetplan'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/la
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
 import { Route as AuthenticatedParametrarRouteImport } from './routes/_authenticated/parametrar'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as AuthenticatedRytmRouteImport } from './routes/_authenticated/rytm'
 import { Route as AuthenticatedSparandeRouteImport } from './routes/_authenticated/sparande'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
 
@@ -39,6 +41,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAvstamningRoute = AuthenticatedAvstamningRouteImport.update({
+  id: '/avstamning',
+  path: '/avstamning',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
   id: '/budget',
@@ -95,6 +102,11 @@ const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRytmRoute = AuthenticatedRytmRouteImport.update({
+  id: '/rytm',
+  path: '/rytm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSparandeRoute = AuthenticatedSparandeRouteImport.update({
   id: '/sparande',
   path: '/sparande',
@@ -110,6 +122,7 @@ const AuthenticatedTransaktionerRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/avstamning': typeof AuthenticatedAvstamningRoute
   '/budget': typeof AuthenticatedBudgetRoute
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
@@ -121,12 +134,14 @@ export interface FileRoutesByFullPath {
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/rytm': typeof AuthenticatedRytmRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/avstamning': typeof AuthenticatedAvstamningRoute
   '/budget': typeof AuthenticatedBudgetRoute
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
@@ -138,6 +153,7 @@ export interface FileRoutesByTo {
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/rytm': typeof AuthenticatedRytmRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
@@ -146,6 +162,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/avstamning': typeof AuthenticatedAvstamningRoute
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
   '/_authenticated/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
@@ -157,6 +174,7 @@ export interface FileRoutesById {
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
   '/_authenticated/parametrar': typeof AuthenticatedParametrarRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
+  '/_authenticated/rytm': typeof AuthenticatedRytmRoute
   '/_authenticated/sparande': typeof AuthenticatedSparandeRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
@@ -165,6 +183,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/avstamning'
     | '/budget'
     | '/budgetplan'
     | '/coach'
@@ -176,12 +195,14 @@ export interface FileRouteTypes {
     | '/onskelista'
     | '/parametrar'
     | '/plan'
+    | '/rytm'
     | '/sparande'
     | '/transaktioner'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/avstamning'
     | '/budget'
     | '/budgetplan'
     | '/coach'
@@ -193,6 +214,7 @@ export interface FileRouteTypes {
     | '/onskelista'
     | '/parametrar'
     | '/plan'
+    | '/rytm'
     | '/sparande'
     | '/transaktioner'
   id:
@@ -200,6 +222,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/avstamning'
     | '/_authenticated/budget'
     | '/_authenticated/budgetplan'
     | '/_authenticated/coach'
@@ -211,6 +234,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onskelista'
     | '/_authenticated/parametrar'
     | '/_authenticated/plan'
+    | '/_authenticated/rytm'
     | '/_authenticated/sparande'
     | '/_authenticated/transaktioner'
   fileRoutesById: FileRoutesById
@@ -243,6 +267,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/avstamning': {
+      id: '/_authenticated/avstamning'
+      path: '/avstamning'
+      fullPath: '/avstamning'
+      preLoaderRoute: typeof AuthenticatedAvstamningRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/budget': {
       id: '/_authenticated/budget'
@@ -321,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rytm': {
+      id: '/_authenticated/rytm'
+      path: '/rytm'
+      fullPath: '/rytm'
+      preLoaderRoute: typeof AuthenticatedRytmRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/sparande': {
       id: '/_authenticated/sparande'
       path: '/sparande'
@@ -339,6 +377,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAvstamningRoute: typeof AuthenticatedAvstamningRoute
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
   AuthenticatedBudgetplanRoute: typeof AuthenticatedBudgetplanRoute
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
@@ -350,11 +389,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
   AuthenticatedParametrarRoute: typeof AuthenticatedParametrarRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
+  AuthenticatedRytmRoute: typeof AuthenticatedRytmRoute
   AuthenticatedSparandeRoute: typeof AuthenticatedSparandeRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAvstamningRoute: AuthenticatedAvstamningRoute,
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
   AuthenticatedBudgetplanRoute: AuthenticatedBudgetplanRoute,
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
@@ -366,6 +407,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
   AuthenticatedParametrarRoute: AuthenticatedParametrarRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
+  AuthenticatedRytmRoute: AuthenticatedRytmRoute,
   AuthenticatedSparandeRoute: AuthenticatedSparandeRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,
 }

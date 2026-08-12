@@ -3,6 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AmountMode, ColumnMap, DateFormat, ParsedRow } from "./parse";
 import type { Encoding } from "./decode";
 import type { MatchType, MerchantRule } from "./rules";
+import { phaseFor, type CareSchedule } from "@/lib/phase";
+
+/** Vårdnadsschemat läses en gång per import och styr fasen på varje rad. */
+async function loadSchedule(): Promise<CareSchedule | null> {
+  const { data } = await supabase.from("care_schedule").select("*").maybeSingle();
+  if (!data) return null;
+  return {
+    cycle_start: String(data.cycle_start).slice(0, 10),
+    cycle_days: Number(data.cycle_days),
+    child_days: Number(data.child_days),
+    handover_weekday: Number(data.handover_weekday),
+  };
+}
 
 export interface ImportProfile {
   id: string;
@@ -172,6 +185,7 @@ export function useCommitImport() {
       const user_id = await uid();
       const rows = input.rows.filter((r) => r.include && !r.duplicate);
       if (rows.length === 0) return 0;
+      const schedule = await loadSchedule();
       const payload = rows.map((r) => ({
         user_id,
         account_id: input.accountId,
@@ -184,6 +198,7 @@ export function useCommitImport() {
         import_hash: r.import_hash ?? null,
         source: "import",
         is_recurring: false,
+        phase: schedule ? phaseFor(r.occurred_at, schedule) : null,
       }));
       const { error } = await supabase.from("transactions").insert(payload as never);
       if (error) throw error;
