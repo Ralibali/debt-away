@@ -332,7 +332,7 @@ function LoansPage() {
               </div>
               <div>
                 <div className="label-xs">Effektiv</div>
-                <div className="num font-medium text-primary">{procent(effectiveRate(l))}</div>
+                <div className="num font-medium text-primary">{procent(effectiveRate(l, params))}</div>
               </div>
             </div>
             <p className="mt-2 text-[0.7rem] leading-relaxed text-muted-foreground">

@@ -111,7 +111,7 @@ function WishlistPage() {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            {priceNumber > 0 ? `Kylperiod: ${cooldownLabel(priceNumber)}` : "Kylperioden sätts av priset"}
+            {priceNumber > 0 ? `Kylperiod: ${cooldownLabel(priceNumber, params)}` : "Kylperioden sätts av priset"}
           </span>
           <Button
             size="sm"

@@ -90,16 +90,19 @@ function SavingsPage() {
     return iskTax(
       { quarterValues, depositsThisYear: depositsInYear(snapshots, ids, year) },
       year,
+      params,
     );
+  }, [accounts, snapshots, params]);
 
-  }, [accounts, snapshots]);
-
-  const advice = capitalAdvice({
-    loans,
-    savings: accounts,
-    avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
-    monthlySurplus: summary.plannedSurplus,
-  });
+  const advice = capitalAdvice(
+    {
+      loans,
+      savings: accounts,
+      avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
+      monthlySurplus: summary.plannedSurplus,
+    },
+    params,
+  );
 
   async function submitReconciliation() {
     const rows = accounts

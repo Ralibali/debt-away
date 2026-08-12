@@ -68,9 +68,12 @@ function PlanPage() {
   const saveScenario = useSaveScenario();
   const delScenario = useDeleteScenario();
 
-  const result = useMemo(() => compare(loans, extra, strategy), [loans, extra, strategy]);
+  const result = useMemo(
+    () => compare(loans, extra, strategy, new Date(), params),
+    [loans, extra, strategy, params],
+  );
   const checklist = useMemo(
-    () => monthlyChecklist(loans, extra, strategy),
+    () => monthlyChecklist(loans, extra, strategy, params),
     [loans, extra, strategy],
   );
   const { chosen, baseline, monthsSaved, interestSaved } = result;
@@ -268,7 +271,7 @@ function PlanPage() {
                     </div>
                   </td>
                   <td className="num px-3 py-2 text-right">
-                    {loan ? procent(effectiveRate(loan)) : "–"}
+                    {loan ? procent(effectiveRate(loan, params)) : "–"}
                   </td>
                   <td className="num px-3 py-2 text-right">
                     {p.neverPaidOff ? (

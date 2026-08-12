@@ -67,8 +67,11 @@ function PurchasePage() {
         },
         loans,
         surplus,
+        "avalanche",
+        new Date(),
+        params,
       ),
-    [what, priceNumber, method, apr, months, invoiceFee, wage, loans, surplus],
+    [what, priceNumber, method, apr, months, invoiceFee, wage, loans, surplus, params],
   );
 
   const cached = useLatestInsight<PurchaseVerdict>("purchase");
