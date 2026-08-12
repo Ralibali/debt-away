@@ -58,7 +58,6 @@ function PlanPage() {
   const { data: params } = useParameters();
   const [extra, setExtra] = useState(extraFromSearch ?? 1000);
   const [strategy, setStrategy] = useState<Strategy3>("avalanche");
-  const [scenarioName, setScenarioName] = useState("");
 
   const month = monthStartISO();
   const { data: categories = [] } = useCategories();
@@ -66,9 +65,6 @@ function PlanPage() {
   const { data: transactions = [] } = useTransactions(month, null);
   const surplus = summarize(categories, budgets, transactions).plannedSurplus;
 
-  const { data: scenarios = [] } = useScenarios();
-  const saveScenario = useSaveScenario();
-  const delScenario = useDeleteScenario();
 
   const result = useMemo(
     () => compare(loans, extra, strategy, new Date(), params),
