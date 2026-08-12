@@ -340,6 +340,18 @@ function LoansPage() {
               {rateExplanation(l)} Minimibetalning nu:{" "}
               {kr(minimumPayment(l, l.current_balance) + (l.monthly_fee ?? 0))}/mån.
             </p>
+            {l.notes && (
+              <p
+                className={`mt-2 text-[0.7rem] leading-relaxed ${
+                  /OSÄKER|ALDRIG|INTE |FÖRFALLIT|SÄG UPP/.test(l.notes)
+                    ? "border-l-2 border-debt pl-2 text-debt"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {/OSÄKER|ALDRIG|INTE |FÖRFALLIT|SÄG UPP/.test(l.notes) ? "⚑ " : ""}
+                {l.notes}
+              </p>
+            )}
           </div>
         ))}
       </div>
