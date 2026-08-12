@@ -13,7 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
+import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
@@ -37,9 +39,19 @@ const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
   path: '/budget',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLackorRoute = AuthenticatedLackorRouteImport.update({
+  id: '/lackor',
+  path: '/lackor',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLanRoute = AuthenticatedLanRouteImport.update({
@@ -63,7 +75,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -72,7 +86,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -83,7 +99,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
+  '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -94,7 +112,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/budget'
+    | '/coach'
     | '/dashboard'
+    | '/lackor'
     | '/lan'
     | '/plan'
     | '/transaktioner'
@@ -103,7 +123,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/budget'
+    | '/coach'
     | '/dashboard'
+    | '/lackor'
     | '/lan'
     | '/plan'
     | '/transaktioner'
@@ -113,7 +135,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/budget'
+    | '/_authenticated/coach'
     | '/_authenticated/dashboard'
+    | '/_authenticated/lackor'
     | '/_authenticated/lan'
     | '/_authenticated/plan'
     | '/_authenticated/transaktioner'
@@ -155,11 +179,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBudgetRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/coach': {
+      id: '/_authenticated/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof AuthenticatedCoachRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/lackor': {
+      id: '/_authenticated/lackor'
+      path: '/lackor'
+      fullPath: '/lackor'
+      preLoaderRoute: typeof AuthenticatedLackorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/lan': {
@@ -188,7 +226,9 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
@@ -196,7 +236,9 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
+  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,
