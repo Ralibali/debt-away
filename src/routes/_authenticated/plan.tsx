@@ -269,7 +269,10 @@ function PlanPage() {
           />
           <Button
             onClick={async () => {
-              if (!scenarioName.trim()) return toast.error("Ange ett namn");
+              if (!scenarioName.trim()) {
+                toast.error("Ange ett namn");
+                return;
+              }
               await saveScenario.mutateAsync({
                 name: scenarioName.trim(),
                 extra_per_month: extra,
