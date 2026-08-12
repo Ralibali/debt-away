@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { runCoachModule, type CoachModule as _M, type Json } from "@/lib/coach.functions";
+import { runCoachModule, type Json } from "@/lib/coach.functions";
 
 export type CoachModule = "leaks" | "budget" | "friction" | "purchase" | "strategy";
 
@@ -84,4 +84,3 @@ export function useCoach<T>(module: CoachModule) {
 }
 
 export type { Json };
-export type CoachModuleServer = _M;
