@@ -24,6 +24,13 @@ export interface Transaction {
   amount: number;
   description: string | null;
   is_recurring: boolean;
+  /** 'manual' eller 'import' */
+  source?: string;
+  raw_description?: string | null;
+  booking_date?: string | null;
+  import_hash?: string | null;
+  /** Låst rad: importerad och avstämd, får inte ändras av misstag */
+  is_locked?: boolean;
 }
 
 export interface Budget {
