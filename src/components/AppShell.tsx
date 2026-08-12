@@ -7,6 +7,8 @@ import {
   Receipt,
   Sparkles,
   Wallet,
+  Upload,
+  SlidersHorizontal,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +20,7 @@ const NAV = [
   { to: "/sparande", label: "Sparande", short: "Spar", icon: Wallet },
   { to: "/budget", label: "Budget", short: "Budget", icon: PiggyBank },
   { to: "/transaktioner", label: "Transaktioner", short: "Trans.", icon: Receipt },
+  { to: "/import", label: "Import", short: "Import", icon: Upload },
   { to: "/coach", label: "Coach", short: "Coach", icon: Sparkles },
 ] as const;
 

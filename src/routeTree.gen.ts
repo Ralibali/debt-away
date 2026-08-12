@@ -20,6 +20,7 @@ import { Route as AuthenticatedKopbeslutRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
+import { Route as AuthenticatedParametrarRouteImport } from './routes/_authenticated/parametrar'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedSparandeRouteImport } from './routes/_authenticated/sparande'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
@@ -78,6 +79,11 @@ const AuthenticatedOnskelistaRoute = AuthenticatedOnskelistaRouteImport.update({
   path: '/onskelista',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedParametrarRoute = AuthenticatedParametrarRouteImport.update({
+  id: '/parametrar',
+  path: '/parametrar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/_authenticated/parametrar': typeof AuthenticatedParametrarRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/sparande': typeof AuthenticatedSparandeRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/lackor'
     | '/lan'
     | '/onskelista'
+    | '/parametrar'
     | '/plan'
     | '/sparande'
     | '/transaktioner'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/lackor'
     | '/lan'
     | '/onskelista'
+    | '/parametrar'
     | '/plan'
     | '/sparande'
     | '/transaktioner'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/lackor'
     | '/_authenticated/lan'
     | '/_authenticated/onskelista'
+    | '/_authenticated/parametrar'
     | '/_authenticated/plan'
     | '/_authenticated/sparande'
     | '/_authenticated/transaktioner'
@@ -276,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnskelistaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/parametrar': {
+      id: '/_authenticated/parametrar'
+      path: '/parametrar'
+      fullPath: '/parametrar'
+      preLoaderRoute: typeof AuthenticatedParametrarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/plan': {
       id: '/_authenticated/plan'
       path: '/plan'
@@ -309,6 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
+  AuthenticatedParametrarRoute: typeof AuthenticatedParametrarRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedSparandeRoute: typeof AuthenticatedSparandeRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
@@ -323,6 +343,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
+  AuthenticatedParametrarRoute: AuthenticatedParametrarRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedSparandeRoute: AuthenticatedSparandeRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,
