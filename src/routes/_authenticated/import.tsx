@@ -180,7 +180,7 @@ function ImportPage() {
       return;
     }
     const id = await saveProfile.mutateAsync({
-      id: profileId ?? undefined,
+      ...(profileId ? { id: profileId } : {}),
       name: profileName.trim(),
       account_id: accountId || null,
       delimiter,
