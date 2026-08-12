@@ -14,7 +14,7 @@ import {
   valueOn,
   type SavingsKind,
 } from "@/lib/savings";
-import { ISK_LATEST_YEAR, iskTax, quarterDates } from "@/lib/isk";
+import { iskTax, quarterDates } from "@/lib/isk";
 import { capitalAdvice } from "@/lib/capital";
 import { summarize } from "@/lib/budget";
 import { useBudgets, useCategories, useLoans, useTransactions } from "@/lib/data";
@@ -89,8 +89,9 @@ function SavingsPage() {
     });
     return iskTax(
       { quarterValues, depositsThisYear: depositsInYear(snapshots, ids, year) },
-      year in { [ISK_LATEST_YEAR]: 1 } ? year : year,
+      year,
     );
+
   }, [accounts, snapshots]);
 
   const advice = capitalAdvice({
