@@ -77,8 +77,12 @@ export interface IskResult {
  * Fribeloppet gäller per person och delas mellan alla ISK och KF — summera
  * kontona före avdraget, dra aldrig 300 000 kr per konto.
  */
-export function iskTax(input: IskInput, year: number = ISK_LATEST_YEAR): IskResult {
-  const constants = iskConstants(year);
+export function iskTax(
+  input: IskInput,
+  year: number = ISK_LATEST_YEAR,
+  p: UserParameters = DEFAULT_PARAMETERS,
+): IskResult {
+  const constants = iskConstants(year, p);
   const measured = input.quarterValues.filter((v): v is number => v != null);
   const sum = measured.reduce((a, b) => a + b, 0) + input.depositsThisYear;
   const kapitalunderlag = sum / 4;
