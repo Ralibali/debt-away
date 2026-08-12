@@ -242,53 +242,12 @@ function PlanPage() {
         </table>
       </div>
 
-      <div className="panel p-3">
-        <div className="label-xs mb-2">Total skuld över tid</div>
-        <div className="h-56 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ left: -18, right: 6, top: 4, bottom: 0 }}>
-              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-                tickFormatter={(v: number) => `${Math.round(v / 1000)}k`}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "var(--popover)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 8,
-                  fontSize: 12,
-                }}
-                labelFormatter={(m) => `Månad ${m}`}
-                formatter={(v: number, name: string) => [kr(v), name === "plan" ? "Med plan" : "Utan extra"]}
-              />
-              <Area
-                type="monotone"
-                dataKey="utan"
-                stroke="var(--muted-foreground)"
-                fill="var(--muted)"
-                strokeWidth={1}
-              />
-              <Area
-                type="monotone"
-                dataKey="plan"
-                stroke="var(--primary)"
-                fill="var(--primary)"
-                fillOpacity={0.18}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <StrategyComparison result={result} />
+
+      <DebtStaircase result={chosen} />
+
+      <InterestVsPrincipal result={chosen} />
+
 
       <div className="panel overflow-hidden">
         <div className="label-xs px-3 pt-3">Ordningsföljd</div>
