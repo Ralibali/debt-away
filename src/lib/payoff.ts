@@ -197,7 +197,7 @@ function pickTarget(
 export function simulate(
   loans: Loan[],
   extraPerMonth: number,
-  strategy: "avalanche" | "snowball" | "baseline",
+  strategy: Strategy,
   startDate: Date = new Date(),
 ): PayoffResult {
   const start = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
@@ -228,8 +228,9 @@ export function simulate(
       break;
     }
 
-    const targetId = pickTarget(active, strategy);
-    let extraPool = extraPerMonth + freedMinimums;
+    const extraAvailable = extraPerMonth + freedMinimums;
+    const targetId = pickTarget(active, strategy, extraAvailable);
+    let extraPool = extraAvailable;
     let monthInterest = 0;
     let monthPaid = 0;
     let monthPrincipal = 0;
