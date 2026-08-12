@@ -18,6 +18,7 @@ import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
+import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
 
@@ -65,6 +66,11 @@ const AuthenticatedLanRoute = AuthenticatedLanRouteImport.update({
   path: '/lan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnskelistaRoute = AuthenticatedOnskelistaRouteImport.update({
+  id: '/onskelista',
+  path: '/onskelista',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
+  '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
+  '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
+  '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
 }
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/lackor'
     | '/lan'
+    | '/onskelista'
     | '/plan'
     | '/transaktioner'
   fileRoutesByTo: FileRoutesByTo
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/lackor'
     | '/lan'
+    | '/onskelista'
     | '/plan'
     | '/transaktioner'
   id:
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/lackor'
     | '/_authenticated/lan'
+    | '/_authenticated/onskelista'
     | '/_authenticated/plan'
     | '/_authenticated/transaktioner'
   fileRoutesById: FileRoutesById
@@ -226,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/onskelista': {
+      id: '/_authenticated/onskelista'
+      path: '/onskelista'
+      fullPath: '/onskelista'
+      preLoaderRoute: typeof AuthenticatedOnskelistaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/plan': {
       id: '/_authenticated/plan'
       path: '/plan'
@@ -250,6 +269,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
+  AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
 }
@@ -261,6 +281,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
+  AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,
 }
