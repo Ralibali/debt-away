@@ -1,0 +1,14 @@
+import { REFERENCE_LOANS as L, SMALL_SEVEN, SNAPSHOT_DATE } from "@/lib/seed-portfolio";
+import { simulate, minimumPayment, monthlyFee } from "@/lib/payoff";
+const mins = L.reduce((s,l)=>s+minimumPayment(l,l.current_balance),0);
+const fees = L.reduce((s,l)=>s+monthlyFee(l),0);
+console.log({mins, fees});
+const brixo=[L.find(l=>l.id==="brixo")!];
+const x=simulate(brixo,0,"baseline",SNAPSHOT_DATE);
+console.log("brixo",x.months,x.totalInterest);
+const all=simulate(L,0,"avalanche",SNAPSHOT_DATE);
+console.log("all mins only",all.months,all.totalInterest);
+const rest=L.filter(l=>!SMALL_SEVEN.includes(l.id));
+const restMin=rest.reduce((s,l)=>s+minimumPayment(l,l.current_balance),0);
+const after=simulate(rest,mins-restMin,"avalanche",SNAPSHOT_DATE);
+console.log("after infusion",after.months,after.totalInterest,after.perLoan.map(p=>[p.name,p.payoffMonth]));
