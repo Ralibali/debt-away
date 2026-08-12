@@ -73,28 +73,33 @@ export const REVOLVING_MIN_FLOOR = 150;
 /**
  * Effektiv ränta efter skatt.
  *
- * Ränteavdraget är avskaffat för lån UTAN säkerhet från inkomståret 2026.
+ * Avdragsnivåerna kommer från användarens parametrar. Standard 2026:
+ * 30 % för lån MED säkerhet, 0 % för lån utan säkerhet (avdraget avskaffat).
  * Studielån (CSN) har aldrig varit avdragsgilla.
  *
  * OBS: Avdraget är 30 % upp till 100 000 kr i räntekostnad per år, därefter
- * 21 %. Den brytpunkten är medvetet INTE inbyggd i v1 — den är irrelevant vid
+ * 21 %. Den brytpunkten är medvetet INTE inbyggd — den är irrelevant vid
  * dessa lånestorlekar, men dokumenteras här.
  */
-export function effectiveRate(loan: Loan): number {
+export function effectiveRate(loan: Loan, p: UserParameters = DEFAULT_PARAMETERS): number {
   // CSN: aldrig avdragsgill
   if (loan.kind === "csn") return loan.nominal_rate;
-  // Lån med säkerhet (t.ex. billån med pant): 30 % avdrag kvarstår
-  if (loan.has_collateral) return loan.nominal_rate * 0.7;
-  // Allt annat utan säkerhet: inget avdrag från 2026
-  return loan.nominal_rate;
+  const deduction = loan.has_collateral ? p.ranteavdrag_sakerhet : p.ranteavdrag_utan_sakerhet;
+  return loan.nominal_rate * (1 - deduction);
 }
 
-export function rateExplanation(loan: Loan): string {
+export function rateExplanation(loan: Loan, p: UserParameters = DEFAULT_PARAMETERS): string {
   if (loan.kind === "csn")
     return "Studielån är inte avdragsgilla — effektiv ränta = nominell ränta.";
-  if (loan.has_collateral)
-    return "Lån med säkerhet (pant) ger 30 % ränteavdrag — effektiv ränta = nominell × 0,7.";
-  return "Lån utan säkerhet: ränteavdraget är avskaffat från 2026 — ingen rabatt.";
+  const pct = (loan.has_collateral ? p.ranteavdrag_sakerhet : p.ranteavdrag_utan_sakerhet) * 100;
+  const label = loan.has_collateral ? "Lån med säkerhet (pant)" : "Lån utan säkerhet";
+  if (pct <= 0)
+    return `${label}: inget ränteavdrag (avskaffat från 2026) — effektiv ränta = nominell ränta.`;
+  return `${label} ger ${pct.toFixed(0).replace(".", ",")} % ränteavdrag — effektiv ränta = nominell × ${(
+    1 - pct / 100
+  )
+    .toFixed(2)
+    .replace(".", ",")}.`;
 }
 
 /** Minimibetalning exkl. avgift för ett givet saldo. */
