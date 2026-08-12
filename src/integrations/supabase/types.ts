@@ -130,6 +130,62 @@ export type Database = {
         }
         Relationships: []
       }
+      import_profiles: {
+        Row: {
+          account_id: string | null
+          amount_mode: string
+          column_map: Json
+          created_at: string
+          date_format: string
+          delimiter: string
+          encoding: string
+          header_row: number
+          id: string
+          name: string
+          sign_flip: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          amount_mode?: string
+          column_map?: Json
+          created_at?: string
+          date_format?: string
+          delimiter?: string
+          encoding?: string
+          header_row?: number
+          id?: string
+          name: string
+          sign_flip?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          amount_mode?: string
+          column_map?: Json
+          created_at?: string
+          date_format?: string
+          delimiter?: string
+          encoding?: string
+          header_row?: number
+          id?: string
+          name?: string
+          sign_flip?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_profiles_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loan_payments: {
         Row: {
           amount: number
@@ -184,6 +240,8 @@ export type Database = {
           interest_daily: boolean
           is_revolving: boolean
           kind: string
+          manual_balance: number | null
+          manual_balance_at: string | null
           min_payment: number | null
           min_payment_pct: number | null
           monthly_fee: number | null
@@ -203,6 +261,8 @@ export type Database = {
           interest_daily?: boolean
           is_revolving?: boolean
           kind: string
+          manual_balance?: number | null
+          manual_balance_at?: string | null
           min_payment?: number | null
           min_payment_pct?: number | null
           monthly_fee?: number | null
@@ -222,6 +282,8 @@ export type Database = {
           interest_daily?: boolean
           is_revolving?: boolean
           kind?: string
+          manual_balance?: number | null
+          manual_balance_at?: string | null
           min_payment?: number | null
           min_payment_pct?: number | null
           monthly_fee?: number | null
@@ -230,6 +292,71 @@ export type Database = {
           notes?: string | null
           original_amount?: number | null
           payment_day?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      merchant_rules: {
+        Row: {
+          category_id: string
+          created_at: string
+          hit_count: number
+          id: string
+          match_type: string
+          pattern: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          hit_count?: number
+          id?: string
+          match_type?: string
+          pattern: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          hit_count?: number
+          id?: string
+          match_type?: string
+          pattern?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_rules_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parameter_changes: {
+        Row: {
+          changed_at: string
+          field: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          field: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          field?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
           user_id?: string
         }
         Relationships: []
@@ -338,38 +465,98 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_splits: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          id: string
+          note: string | null
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_splits_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_splits_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           account_id: string | null
           amount: number
+          booking_date: string | null
           category_id: string | null
           created_at: string | null
           description: string | null
           id: string
+          import_hash: string | null
+          is_locked: boolean
           is_recurring: boolean
           occurred_at: string
+          raw_description: string | null
+          source: string
           user_id: string
         }
         Insert: {
           account_id?: string | null
           amount: number
+          booking_date?: string | null
           category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          import_hash?: string | null
+          is_locked?: boolean
           is_recurring?: boolean
           occurred_at: string
+          raw_description?: string | null
+          source?: string
           user_id: string
         }
         Update: {
           account_id?: string | null
           amount?: number
+          booking_date?: string | null
           category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          import_hash?: string | null
+          is_locked?: boolean
           is_recurring?: boolean
           occurred_at?: string
+          raw_description?: string | null
+          source?: string
           user_id?: string
         }
         Relationships: [
@@ -388,6 +575,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_parameters: {
+        Row: {
+          buffer_months: number
+          cooldown_large_days: number
+          cooldown_large_limit: number
+          cooldown_medium_days: number
+          cooldown_small_hours: number
+          cooldown_small_limit: number
+          expected_return: number
+          hourly_net_wage: number | null
+          isk_fribelopp: number
+          isk_schablonranta: number
+          kapitalskatt: number
+          monthly_net_income: number | null
+          ranteavdrag_sakerhet: number
+          ranteavdrag_utan_sakerhet: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          buffer_months?: number
+          cooldown_large_days?: number
+          cooldown_large_limit?: number
+          cooldown_medium_days?: number
+          cooldown_small_hours?: number
+          cooldown_small_limit?: number
+          expected_return?: number
+          hourly_net_wage?: number | null
+          isk_fribelopp?: number
+          isk_schablonranta?: number
+          kapitalskatt?: number
+          monthly_net_income?: number | null
+          ranteavdrag_sakerhet?: number
+          ranteavdrag_utan_sakerhet?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          buffer_months?: number
+          cooldown_large_days?: number
+          cooldown_large_limit?: number
+          cooldown_medium_days?: number
+          cooldown_small_hours?: number
+          cooldown_small_limit?: number
+          expected_return?: number
+          hourly_net_wage?: number | null
+          isk_fribelopp?: number
+          isk_schablonranta?: number
+          kapitalskatt?: number
+          monthly_net_income?: number | null
+          ranteavdrag_sakerhet?: number
+          ranteavdrag_utan_sakerhet?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       wishlist: {
         Row: {

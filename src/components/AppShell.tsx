@@ -7,6 +7,8 @@ import {
   Receipt,
   Sparkles,
   Wallet,
+  Upload,
+  SlidersHorizontal,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +20,7 @@ const NAV = [
   { to: "/sparande", label: "Sparande", short: "Spar", icon: Wallet },
   { to: "/budget", label: "Budget", short: "Budget", icon: PiggyBank },
   { to: "/transaktioner", label: "Transaktioner", short: "Trans.", icon: Receipt },
+  { to: "/import", label: "Import", short: "Import", icon: Upload },
   { to: "/coach", label: "Coach", short: "Coach", icon: Sparkles },
 ] as const;
 
@@ -46,20 +49,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </nav>
-          <button
-            onClick={signOut}
-            className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Logga ut"
-          >
-            <LogOut className="size-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <Link
+              to="/parametrar"
+              className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+              aria-label="Parametrar"
+            >
+              <SlidersHorizontal className="size-4" />
+            </Link>
+            <button
+              onClick={signOut}
+              className="rounded-[6px] p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Logga ut"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 md:pb-12">{children ?? <Outlet />}</main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card md:hidden">
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-8">
           {NAV.map((n) => (
             <Link
               key={n.to}

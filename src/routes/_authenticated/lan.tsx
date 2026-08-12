@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
-import { useLoans, useSaveLoan, useDeleteLoan } from "@/lib/data";
+import { useLoans, useSaveLoan, useDeleteLoan, useParameters } from "@/lib/data";
 import { effectiveRate, rateExplanation, minimumPayment, type Loan, type LoanKind } from "@/lib/payoff";
 import { kr, procent, LOAN_KIND_LABELS } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -272,6 +272,7 @@ function toForm(l: Loan): FormState {
 
 function LoansPage() {
   const { data: loans = [], isLoading } = useLoans();
+  const { data: params } = useParameters();
   const del = useDeleteLoan();
   const [editing, setEditing] = useState<FormState | null>(null);
 
@@ -332,7 +333,7 @@ function LoansPage() {
               </div>
               <div>
                 <div className="label-xs">Effektiv</div>
-                <div className="num font-medium text-primary">{procent(effectiveRate(l))}</div>
+                <div className="num font-medium text-primary">{procent(effectiveRate(l, params))}</div>
               </div>
             </div>
             <p className="mt-2 text-[0.7rem] leading-relaxed text-muted-foreground">

@@ -10,6 +10,7 @@ import {
   type Loan,
   type Strategy,
 } from "@/lib/payoff";
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
 
 export type PaymentMethod = "kontant" | "kort" | "delbetalning";
 
@@ -85,6 +86,7 @@ export function computePurchase(
   extraPerMonth: number,
   strategy: Strategy = "avalanche",
   today: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): PurchaseCalc {
   const months = input.method === "delbetalning" ? Math.max(1, Math.round(input.months)) : 1;
   const monthlyRate = input.method === "delbetalning" ? input.apr / 100 / 12 : 0;
@@ -109,8 +111,8 @@ export function computePurchase(
       : 0;
 
   // Alternativkostnad: kör simulate() två gånger — med och utan beloppet.
-  const target = highestRateLoan(loans);
-  const withPurchase = simulate(loans, extraPerMonth, strategy, today);
+  const target = highestRateLoan(loans, p);
+  const withPurchase = simulate(loans, extraPerMonth, strategy, today, p);
   const loansWithLump = target
     ? loans.map((l) =>
         l.id === target.id
@@ -118,14 +120,14 @@ export function computePurchase(
           : l,
       )
     : loans;
-  const withoutPurchase = simulate(loansWithLump, extraPerMonth, strategy, today);
+  const withoutPurchase = simulate(loansWithLump, extraPerMonth, strategy, today, p);
 
   const monthsEarlier =
     withPurchase.months != null && withoutPurchase.months != null
       ? withPurchase.months - withoutPurchase.months
       : null;
 
-  const revolving = revolvingWithInterest(loans);
+  const revolving = revolvingWithInterest(loans, p);
   const redFlag = input.method === "delbetalning" && revolving.length > 0;
 
   return {
@@ -149,7 +151,7 @@ export function computePurchase(
     redFlag,
     redFlagReason: redFlag
       ? `Du har revolverande skuld med ${Math.max(
-          ...revolving.map((l) => effectiveRate(l)),
+          ...revolving.map((l) => effectiveRate(l, p)),
         ).toFixed(1)} % effektiv ränta kvar (${revolving
           .map((l) => l.name)
           .join(", ")}). Ny delbetalning medan dyr skuld ligger kvar är att låna för att låna.`

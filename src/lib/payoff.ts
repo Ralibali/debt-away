@@ -2,6 +2,7 @@
  * Avbetalningsmotor — ren TypeScript, inga sidoeffekter, ingen fetch.
  * All beräkningslogik för lån och avbetalningsplaner bor här.
  */
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
 
 export type LoanKind = "csn" | "billan" | "privatlan" | "kreditkort" | "kontokredit";
 
@@ -73,28 +74,33 @@ export const REVOLVING_MIN_FLOOR = 150;
 /**
  * Effektiv ränta efter skatt.
  *
- * Ränteavdraget är avskaffat för lån UTAN säkerhet från inkomståret 2026.
+ * Avdragsnivåerna kommer från användarens parametrar. Standard 2026:
+ * 30 % för lån MED säkerhet, 0 % för lån utan säkerhet (avdraget avskaffat).
  * Studielån (CSN) har aldrig varit avdragsgilla.
  *
  * OBS: Avdraget är 30 % upp till 100 000 kr i räntekostnad per år, därefter
- * 21 %. Den brytpunkten är medvetet INTE inbyggd i v1 — den är irrelevant vid
+ * 21 %. Den brytpunkten är medvetet INTE inbyggd — den är irrelevant vid
  * dessa lånestorlekar, men dokumenteras här.
  */
-export function effectiveRate(loan: Loan): number {
+export function effectiveRate(loan: Loan, p: UserParameters = DEFAULT_PARAMETERS): number {
   // CSN: aldrig avdragsgill
   if (loan.kind === "csn") return loan.nominal_rate;
-  // Lån med säkerhet (t.ex. billån med pant): 30 % avdrag kvarstår
-  if (loan.has_collateral) return loan.nominal_rate * 0.7;
-  // Allt annat utan säkerhet: inget avdrag från 2026
-  return loan.nominal_rate;
+  const deduction = loan.has_collateral ? p.ranteavdrag_sakerhet : p.ranteavdrag_utan_sakerhet;
+  return loan.nominal_rate * (1 - deduction);
 }
 
-export function rateExplanation(loan: Loan): string {
+export function rateExplanation(loan: Loan, p: UserParameters = DEFAULT_PARAMETERS): string {
   if (loan.kind === "csn")
     return "Studielån är inte avdragsgilla — effektiv ränta = nominell ränta.";
-  if (loan.has_collateral)
-    return "Lån med säkerhet (pant) ger 30 % ränteavdrag — effektiv ränta = nominell × 0,7.";
-  return "Lån utan säkerhet: ränteavdraget är avskaffat från 2026 — ingen rabatt.";
+  const pct = (loan.has_collateral ? p.ranteavdrag_sakerhet : p.ranteavdrag_utan_sakerhet) * 100;
+  const label = loan.has_collateral ? "Lån med säkerhet (pant)" : "Lån utan säkerhet";
+  if (pct <= 0)
+    return `${label}: inget ränteavdrag (avskaffat från 2026) — effektiv ränta = nominell ränta.`;
+  return `${label} ger ${pct.toFixed(0).replace(".", ",")} % ränteavdrag — effektiv ränta = nominell × ${(
+    1 - pct / 100
+  )
+    .toFixed(2)
+    .replace(".", ",")}.`;
 }
 
 /** Minimibetalning exkl. avgift för ett givet saldo. */
@@ -160,6 +166,7 @@ function pickTarget(
   active: { loan: Loan; balance: number }[],
   strategy: Strategy,
   availableExtra: number,
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): string | null {
   if (active.length === 0) return null;
   if (strategy === "baseline") return null;
@@ -170,18 +177,18 @@ function pickTarget(
     // räntekostnad. Därefter ren lavin.
     const smallest = [...active].sort((a, b) => a.balance - b.balance)[0]!;
     if (monthsToClear(smallest, availableExtra) <= 3) return smallest.loan.id;
-    return pickTarget(active, "avalanche", availableExtra);
+    return pickTarget(active, "avalanche", availableExtra, p);
   }
 
   const sorted = [...active].sort((a, b) => {
     if (strategy === "avalanche") {
-      const diff = effectiveRate(b.loan) - effectiveRate(a.loan);
+      const diff = effectiveRate(b.loan, p) - effectiveRate(a.loan, p);
       if (Math.abs(diff) > 1e-9) return diff;
       return a.balance - b.balance;
     }
     const diff = a.balance - b.balance;
     if (Math.abs(diff) > 1e-9) return diff;
-    return effectiveRate(b.loan) - effectiveRate(a.loan);
+    return effectiveRate(b.loan, p) - effectiveRate(a.loan, p);
   });
   return sorted[0]!.loan.id;
 }
@@ -199,6 +206,7 @@ export function simulate(
   extraPerMonth: number,
   strategy: Strategy,
   startDate: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): PayoffResult {
   const start = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
   const balances = new Map<string, number>();
@@ -229,7 +237,7 @@ export function simulate(
     }
 
     const extraAvailable = extraPerMonth + freedMinimums;
-    const targetId = pickTarget(active, strategy, extraAvailable);
+    const targetId = pickTarget(active, strategy, extraAvailable, p);
     let extraPool = extraAvailable;
     let monthInterest = 0;
     let monthPaid = 0;
@@ -342,11 +350,12 @@ export function compare(
   extraPerMonth: number,
   strategy: "avalanche" | "snowball" | "hybrid",
   startDate: Date = new Date(),
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): ComparisonResult {
-  const baseline = simulate(loans, 0, "baseline", startDate);
-  const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate);
-  const snowball = simulate(loans, extraPerMonth, "snowball", startDate);
-  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate);
+  const baseline = simulate(loans, 0, "baseline", startDate, p);
+  const avalanche = simulate(loans, extraPerMonth, "avalanche", startDate, p);
+  const snowball = simulate(loans, extraPerMonth, "snowball", startDate, p);
+  const hybrid = simulate(loans, extraPerMonth, "hybrid", startDate, p);
   const chosen =
     strategy === "avalanche" ? avalanche : strategy === "snowball" ? snowball : hybrid;
   return {
@@ -381,11 +390,12 @@ export function monthlyChecklist(
   loans: Loan[],
   extraPerMonth: number,
   strategy: Strategy,
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): ChecklistRow[] {
   const active = loans
     .filter((l) => l.current_balance > 0.005)
     .map((l) => ({ loan: l, balance: l.current_balance }));
-  const targetId = pickTarget(active, strategy, extraPerMonth);
+  const targetId = pickTarget(active, strategy, extraPerMonth, p);
   return active.map(({ loan, balance }) => {
     const minimum =
       Math.round((minimumPayment(loan, balance) + monthlyFee(loan)) * 100) / 100;
@@ -408,15 +418,21 @@ export function monthlyChecklist(
 }
 
 /** Lån med revolverande kredit och positiv effektiv ränta. */
-export function revolvingWithInterest(loans: Loan[]): Loan[] {
+export function revolvingWithInterest(
+  loans: Loan[],
+  p: UserParameters = DEFAULT_PARAMETERS,
+): Loan[] {
   return loans.filter(
-    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l) > 0,
+    (l) => l.is_revolving && l.current_balance > 0.005 && effectiveRate(l, p) > 0,
   );
 }
 
 /** Lånet med högst effektiv ränta (och saldo kvar). */
-export function highestRateLoan(loans: Loan[]): Loan | null {
+export function highestRateLoan(
+  loans: Loan[],
+  p: UserParameters = DEFAULT_PARAMETERS,
+): Loan | null {
   const withBalance = loans.filter((l) => l.current_balance > 0.005);
   if (withBalance.length === 0) return null;
-  return [...withBalance].sort((a, b) => effectiveRate(b) - effectiveRate(a))[0]!;
+  return [...withBalance].sort((a, b) => effectiveRate(b, p) - effectiveRate(a, p))[0]!;
 }

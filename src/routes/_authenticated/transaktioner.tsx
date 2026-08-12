@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Lock } from "lucide-react";
 import {
   useAccounts,
   useCategories,
@@ -168,8 +168,16 @@ function TransactionsPage() {
         {transactions.map((t) => (
           <div key={t.id} className="flex items-center gap-2 px-3 py-2 text-sm">
             <div className="min-w-0 flex-1">
-              <div className="truncate">
-                {t.description || catById.get(t.category_id ?? "")?.name || "Utan beskrivning"}
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="truncate">
+                  {t.description || catById.get(t.category_id ?? "")?.name || "Utan beskrivning"}
+                </span>
+                {t.source === "import" && (
+                  <span className="label-xs shrink-0 rounded-[4px] border border-border px-1 py-px text-[0.6rem]">
+                    import
+                  </span>
+                )}
+                {t.is_locked && <Lock className="size-3 shrink-0 text-muted-foreground" />}
               </div>
               <div className="num text-[0.7rem] text-muted-foreground">
                 {t.occurred_at}
@@ -184,7 +192,9 @@ function TransactionsPage() {
             </span>
             <button
               aria-label="Ta bort"
-              className="p-1 text-muted-foreground hover:text-destructive"
+              disabled={t.is_locked}
+              title={t.is_locked ? "Låst rad — lås upp först" : "Ta bort"}
+              className="p-1 text-muted-foreground hover:text-destructive disabled:opacity-30"
               onClick={() => del.mutate(t.id)}
             >
               <Trash2 className="size-4" />

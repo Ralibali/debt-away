@@ -4,13 +4,14 @@
  */
 
 import { effectiveRate, type Loan } from "@/lib/payoff";
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
 import type { SavingsAccount } from "@/lib/savings";
 
 export type BufferStatus = "saknas" | "delvis" | "uppfylld";
 
 export interface CapitalAdvice {
   bufferStatus: BufferStatus;
-  /** 3 × genomsnittliga månadsutgifter */
+  /** buffertmånader × genomsnittliga månadsutgifter */
   bufferTarget: number;
   bufferValue: number;
   /** Effektiv ränta på dyraste skulden, i procent */
@@ -40,15 +41,19 @@ export interface CapitalInput {
   expectedReturn?: number;
 }
 
-export function capitalAdvice(input: CapitalInput): CapitalAdvice {
+export function capitalAdvice(
+  input: CapitalInput,
+  p: UserParameters = DEFAULT_PARAMETERS,
+): CapitalAdvice {
   const { loans, savings, avgMonthlyExpenses, monthlySurplus } = input;
-  const expectedReturn = input.expectedReturn ?? 7;
+  const expectedReturn = input.expectedReturn ?? p.expected_return * 100;
 
   const bufferAccounts = savings.filter((s) => s.is_buffer || s.kind === "buffert");
-  // Tre månaders utgifter är förstahandsmålet. Saknas utgiftsdata används
+  // Buffertmålet i månader kommer från parametrarna. Saknas utgiftsdata används
   // målbeloppen som satts manuellt på buffertkontona.
   const targetFromAccounts = bufferAccounts.reduce((sum, s) => sum + (s.target_value ?? 0), 0);
-  const bufferTarget = Math.round(avgMonthlyExpenses * 3) || Math.round(targetFromAccounts);
+  const bufferTarget =
+    Math.round(avgMonthlyExpenses * p.buffer_months) || Math.round(targetFromAccounts);
   const bufferValue = bufferAccounts.reduce((sum, s) => sum + s.current_value, 0);
 
 
@@ -61,9 +66,9 @@ export function capitalAdvice(input: CapitalInput): CapitalAdvice {
 
   const withBalance = loans.filter((l) => l.current_balance > 0.005);
   const costliest = withBalance.length
-    ? [...withBalance].sort((a, b) => effectiveRate(b) - effectiveRate(a))[0]!
+    ? [...withBalance].sort((a, b) => effectiveRate(b, p) - effectiveRate(a, p))[0]!
     : null;
-  const costliestDebtRate = costliest ? effectiveRate(costliest) : 0;
+  const costliestDebtRate = costliest ? effectiveRate(costliest, p) : 0;
 
   const cashAccounts = savings.filter(
     (s) => s.kind === "sparkonto" && s.interest_rate != null,

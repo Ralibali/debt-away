@@ -7,6 +7,7 @@ import {
   useLoans,
   principalByMonth,
   useTransactions,
+  useParameters,
 } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import {
@@ -53,6 +54,7 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 
 function Dashboard() {
   const { data: loans = [], isLoading } = useLoans();
+  const { data: params } = useParameters();
   const { data: savings = [] } = useSavingsAccounts();
   const { data: snapshots = [] } = useSavingsSnapshots();
   const { data: payments = [] } = useAllLoanPayments();
@@ -83,17 +85,20 @@ function Dashboard() {
     (s, l) => s + minimumPayment(l, l.current_balance) + (l.monthly_fee ?? 0),
     0,
   );
-  const base = simulate(loans, 0, "baseline");
+  const base = simulate(loans, 0, "baseline", new Date(), params);
   const savingsTotal = savings.reduce((s, a) => s + a.current_value, 0);
-  const sorted = [...loans].sort((a, b) => effectiveRate(b) - effectiveRate(a));
+  const sorted = [...loans].sort((a, b) => effectiveRate(b, params) - effectiveRate(a, params));
   const max = Math.max(1, ...loans.map((l) => l.current_balance));
 
-  const advice = capitalAdvice({
-    loans,
-    savings,
-    avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
-    monthlySurplus: summary.plannedSurplus,
-  });
+  const advice = capitalAdvice(
+    {
+      loans,
+      savings,
+      avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
+      monthlySurplus: summary.plannedSurplus,
+    },
+    params,
+  );
 
   const empty = loans.length === 0 && savings.length === 0;
 
@@ -182,7 +187,7 @@ function Dashboard() {
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4">
                       <span className="truncate text-15 font-medium">{l.name}</span>
                       <span className="num shrink-0 text-13 text-muted-foreground">
-                        {procent(effectiveRate(l))} · {kr(l.current_balance)}
+                        {procent(effectiveRate(l, params))} · {kr(l.current_balance)}
                       </span>
                     </div>
                     <div className="mt-2 h-2 w-full bg-background">

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions } from "@/lib/data";
+import { useBudgets, useCategories, useLoans, useSaveScenario, useScenarios, useDeleteScenario, useTransactions, useParameters } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import { compare, effectiveRate, monthlyChecklist } from "@/lib/payoff";
 import { kr, manad, monthStartISO, procent } from "@/lib/format";
@@ -54,6 +54,7 @@ export const Route = createFileRoute("/_authenticated/plan")({
 function PlanPage() {
   const { extra: extraFromSearch } = Route.useSearch();
   const { data: loans = [] } = useLoans();
+  const { data: params } = useParameters();
   const [extra, setExtra] = useState(extraFromSearch ?? 1000);
   const [strategy, setStrategy] = useState<Strategy3>("avalanche");
   const [scenarioName, setScenarioName] = useState("");
@@ -68,9 +69,12 @@ function PlanPage() {
   const saveScenario = useSaveScenario();
   const delScenario = useDeleteScenario();
 
-  const result = useMemo(() => compare(loans, extra, strategy), [loans, extra, strategy]);
+  const result = useMemo(
+    () => compare(loans, extra, strategy, new Date(), params),
+    [loans, extra, strategy, params],
+  );
   const checklist = useMemo(
-    () => monthlyChecklist(loans, extra, strategy),
+    () => monthlyChecklist(loans, extra, strategy, params),
     [loans, extra, strategy],
   );
   const { chosen, baseline, monthsSaved, interestSaved } = result;
@@ -268,7 +272,7 @@ function PlanPage() {
                     </div>
                   </td>
                   <td className="num px-3 py-2 text-right">
-                    {loan ? procent(effectiveRate(loan)) : "–"}
+                    {loan ? procent(effectiveRate(loan, params)) : "–"}
                   </td>
                   <td className="num px-3 py-2 text-right">
                     {p.neverPaidOff ? (

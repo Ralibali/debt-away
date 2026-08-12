@@ -16,10 +16,12 @@ import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedBudgetplanRouteImport } from './routes/_authenticated/budgetplan'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedKopbeslutRouteImport } from './routes/_authenticated/kopbeslut'
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
+import { Route as AuthenticatedParametrarRouteImport } from './routes/_authenticated/parametrar'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedSparandeRouteImport } from './routes/_authenticated/sparande'
 import { Route as AuthenticatedTransaktionerRouteImport } from './routes/_authenticated/transaktioner'
@@ -58,6 +60,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedKopbeslutRoute = AuthenticatedKopbeslutRouteImport.update({
   id: '/kopbeslut',
   path: '/kopbeslut',
@@ -76,6 +83,11 @@ const AuthenticatedLanRoute = AuthenticatedLanRouteImport.update({
 const AuthenticatedOnskelistaRoute = AuthenticatedOnskelistaRouteImport.update({
   id: '/onskelista',
   path: '/onskelista',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedParametrarRoute = AuthenticatedParametrarRouteImport.update({
+  id: '/parametrar',
+  path: '/parametrar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
@@ -102,10 +114,12 @@ export interface FileRoutesByFullPath {
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/import': typeof AuthenticatedImportRoute
   '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -117,10 +131,12 @@ export interface FileRoutesByTo {
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/import': typeof AuthenticatedImportRoute
   '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/sparande': typeof AuthenticatedSparandeRoute
   '/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -134,10 +150,12 @@ export interface FileRoutesById {
   '/_authenticated/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
+  '/_authenticated/parametrar': typeof AuthenticatedParametrarRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/sparande': typeof AuthenticatedSparandeRoute
   '/_authenticated/transaktioner': typeof AuthenticatedTransaktionerRoute
@@ -151,10 +169,12 @@ export interface FileRouteTypes {
     | '/budgetplan'
     | '/coach'
     | '/dashboard'
+    | '/import'
     | '/kopbeslut'
     | '/lackor'
     | '/lan'
     | '/onskelista'
+    | '/parametrar'
     | '/plan'
     | '/sparande'
     | '/transaktioner'
@@ -166,10 +186,12 @@ export interface FileRouteTypes {
     | '/budgetplan'
     | '/coach'
     | '/dashboard'
+    | '/import'
     | '/kopbeslut'
     | '/lackor'
     | '/lan'
     | '/onskelista'
+    | '/parametrar'
     | '/plan'
     | '/sparande'
     | '/transaktioner'
@@ -182,10 +204,12 @@ export interface FileRouteTypes {
     | '/_authenticated/budgetplan'
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
+    | '/_authenticated/import'
     | '/_authenticated/kopbeslut'
     | '/_authenticated/lackor'
     | '/_authenticated/lan'
     | '/_authenticated/onskelista'
+    | '/_authenticated/parametrar'
     | '/_authenticated/plan'
     | '/_authenticated/sparande'
     | '/_authenticated/transaktioner'
@@ -248,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/import': {
+      id: '/_authenticated/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AuthenticatedImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/kopbeslut': {
       id: '/_authenticated/kopbeslut'
       path: '/kopbeslut'
@@ -274,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/onskelista'
       fullPath: '/onskelista'
       preLoaderRoute: typeof AuthenticatedOnskelistaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parametrar': {
+      id: '/_authenticated/parametrar'
+      path: '/parametrar'
+      fullPath: '/parametrar'
+      preLoaderRoute: typeof AuthenticatedParametrarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plan': {
@@ -305,10 +343,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetplanRoute: typeof AuthenticatedBudgetplanRoute
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedImportRoute: typeof AuthenticatedImportRoute
   AuthenticatedKopbeslutRoute: typeof AuthenticatedKopbeslutRoute
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
+  AuthenticatedParametrarRoute: typeof AuthenticatedParametrarRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedSparandeRoute: typeof AuthenticatedSparandeRoute
   AuthenticatedTransaktionerRoute: typeof AuthenticatedTransaktionerRoute
@@ -319,10 +359,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetplanRoute: AuthenticatedBudgetplanRoute,
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedImportRoute: AuthenticatedImportRoute,
   AuthenticatedKopbeslutRoute: AuthenticatedKopbeslutRoute,
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
+  AuthenticatedParametrarRoute: AuthenticatedParametrarRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedSparandeRoute: AuthenticatedSparandeRoute,
   AuthenticatedTransaktionerRoute: AuthenticatedTransaktionerRoute,

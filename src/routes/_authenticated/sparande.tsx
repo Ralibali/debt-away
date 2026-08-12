@@ -17,7 +17,7 @@ import {
 import { iskTax, quarterDates } from "@/lib/isk";
 import { capitalAdvice } from "@/lib/capital";
 import { summarize } from "@/lib/budget";
-import { useBudgets, useCategories, useLoans, useTransactions } from "@/lib/data";
+import { useBudgets, useCategories, useLoans, useTransactions, useParameters } from "@/lib/data";
 import { kr, monthStartISO, procent, todayISO } from "@/lib/format";
 import { FribeloppMeter } from "@/components/charts/FribeloppMeter";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,7 @@ const KINDS = Object.keys(SAVINGS_KIND_LABELS) as SavingsKind[];
 
 function SavingsPage() {
   const { data: accounts = [], isLoading } = useSavingsAccounts();
+  const { data: params } = useParameters();
   const { data: snapshots = [] } = useSavingsSnapshots();
   const saveAccount = useSaveSavingsAccount();
   const deleteAccount = useDeleteSavingsAccount();
@@ -90,16 +91,19 @@ function SavingsPage() {
     return iskTax(
       { quarterValues, depositsThisYear: depositsInYear(snapshots, ids, year) },
       year,
+      params,
     );
+  }, [accounts, snapshots, params]);
 
-  }, [accounts, snapshots]);
-
-  const advice = capitalAdvice({
-    loans,
-    savings: accounts,
-    avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
-    monthlySurplus: summary.plannedSurplus,
-  });
+  const advice = capitalAdvice(
+    {
+      loans,
+      savings: accounts,
+      avgMonthlyExpenses: summary.actualExpense || summary.plannedExpense,
+      monthlySurplus: summary.plannedSurplus,
+    },
+    params,
+  );
 
   async function submitReconciliation() {
     const rows = accounts

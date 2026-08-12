@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Loan } from "@/lib/payoff";
+import {
+  DEFAULT_PARAMETERS,
+  PARAM_FIELDS,
+  withDefaults,
+  type UserParameters,
+} from "@/lib/parameters";
 
 export interface Account {
   id: string;
@@ -24,6 +30,13 @@ export interface Transaction {
   amount: number;
   description: string | null;
   is_recurring: boolean;
+  /** 'manual' eller 'import' */
+  source?: string;
+  raw_description?: string | null;
+  booking_date?: string | null;
+  import_hash?: string | null;
+  /** Låst rad: importerad och avstämd, får inte ändras av misstag */
+  is_locked?: boolean;
 }
 
 export interface Budget {
@@ -255,13 +268,14 @@ export function useWishlist() {
 
 export function useAddWish() {
   const qc = useQueryClient();
+  const { data: params = DEFAULT_PARAMETERS } = useParameters();
   return useMutation({
     mutationFn: async (w: { item: string; price: number; url: string | null; mood: string | null }) => {
       const user_id = await uid();
       const { error } = await supabase.from("wishlist").insert({
         ...w,
         user_id,
-        cooldown_until: cooldownUntil(w.price),
+        cooldown_until: cooldownUntil(w.price, new Date(), params),
       } as never);
       if (error) throw error;
     },
@@ -393,4 +407,96 @@ export function principalByMonth(payments: LoanPayment[]): Record<string, number
     out[key] = (out[key] ?? 0) + (p.principal_part ?? 0);
   }
   return out;
+}
+
+/** Uppdatera en befintlig transaktion (kategori, lås, beskrivning). */
+export function useUpdateTransaction() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (t: { id: string } & Partial<Omit<Transaction, "id">>) => {
+      const { id, ...rest } = t;
+      const { error } = await supabase.from("transactions").update(rest as never).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["transactions"] }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Manuella parametrar
+// ---------------------------------------------------------------------------
+
+/**
+ * Alla beräkningskonstanter. Saknas raden används standardvärdena — inget
+ * tal i appen kommer från en gissning.
+ */
+export function useParameters() {
+  return useQuery({
+    queryKey: ["user_parameters"],
+    queryFn: async (): Promise<UserParameters> => {
+      const { data, error } = await supabase.from("user_parameters").select("*").maybeSingle();
+      if (error) throw error;
+      return withDefaults(data as Partial<UserParameters> | null);
+    },
+    initialData: DEFAULT_PARAMETERS,
+  });
+}
+
+export function useSaveParameters() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { next: UserParameters; previous: UserParameters }) => {
+      const user_id = await uid();
+      const { next, previous } = input;
+      const row: Record<string, unknown> = { user_id };
+      for (const f of PARAM_FIELDS) row[f.key] = next[f.key];
+      const { error } = await supabase
+        .from("user_parameters")
+        .upsert(row as never, { onConflict: "user_id" });
+      if (error) throw error;
+
+      const changes = PARAM_FIELDS.filter((f) => String(previous[f.key]) !== String(next[f.key])).map(
+        (f) => ({
+          user_id,
+          field: f.key,
+          old_value: previous[f.key] == null ? null : String(previous[f.key]),
+          new_value: next[f.key] == null ? null : String(next[f.key]),
+        }),
+      );
+      if (changes.length > 0) {
+        const { error: logError } = await supabase
+          .from("parameter_changes")
+          .insert(changes as never);
+        if (logError) throw logError;
+      }
+      return changes.length;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["user_parameters"] });
+      qc.invalidateQueries({ queryKey: ["parameter_changes"] });
+    },
+  });
+}
+
+export interface ParameterChange {
+  id: string;
+  field: string;
+  old_value: string | null;
+  new_value: string | null;
+  changed_at: string;
+}
+
+export function useParameterChanges() {
+  return useQuery({
+    queryKey: ["parameter_changes"],
+    queryFn: async (): Promise<ParameterChange[]> => {
+      const { data, error } = await supabase
+        .from("parameter_changes")
+        .select("*")
+        .order("changed_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      return (data ?? []) as ParameterChange[];
+    },
+  });
 }
