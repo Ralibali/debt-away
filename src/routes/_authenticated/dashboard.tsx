@@ -6,8 +6,7 @@ import {
   useCategories,
   useLoans,
   principalByMonth,
-  useTransactions,
-} from "@/lib/data";
+  useTransactions,, useParameters } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import {
   currentMonthlyInterest,
@@ -53,6 +52,7 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 
 function Dashboard() {
   const { data: loans = [], isLoading } = useLoans();
+  const { data: params } = useParameters();
   const { data: savings = [] } = useSavingsAccounts();
   const { data: snapshots = [] } = useSavingsSnapshots();
   const { data: payments = [] } = useAllLoanPayments();

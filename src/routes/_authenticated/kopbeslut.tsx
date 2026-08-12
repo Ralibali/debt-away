@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useBudgets, useCategories, useLoans, useTransactions } from "@/lib/data";
+import { useBudgets, useCategories, useLoans, useTransactions, useParameters } from "@/lib/data";
 import { summarize } from "@/lib/budget";
 import { CREDIT_FACTS, computePurchase, type PaymentMethod } from "@/lib/purchase";
 import { useCoach, useLatestInsight, type Json, type PurchaseVerdict } from "@/lib/coach";
@@ -37,6 +37,7 @@ const METHODS: { value: PaymentMethod; label: string }[] = [
 
 function PurchasePage() {
   const { data: loans = [] } = useLoans();
+  const { data: params } = useParameters();
   const month = monthStartISO();
   const { data: categories = [] } = useCategories();
   const { data: budgets = [] } = useBudgets(month);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
-import { useLoans, useSaveLoan, useDeleteLoan } from "@/lib/data";
+import { useLoans, useSaveLoan, useDeleteLoan, useParameters } from "@/lib/data";
 import { effectiveRate, rateExplanation, minimumPayment, type Loan, type LoanKind } from "@/lib/payoff";
 import { kr, procent, LOAN_KIND_LABELS } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -272,6 +272,7 @@ function toForm(l: Loan): FormState {
 
 function LoansPage() {
   const { data: loans = [], isLoading } = useLoans();
+  const { data: params } = useParameters();
   const del = useDeleteLoan();
   const [editing, setEditing] = useState<FormState | null>(null);
 

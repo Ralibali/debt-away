@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useAddWish, useDecideWish, useDeleteWish, useWishlist } from "@/lib/data";
+import { useAddWish, useDecideWish, useDeleteWish, useWishlist, useParameters } from "@/lib/data";
 import {
   DECISION_QUESTIONS,
   MOODS,
@@ -45,6 +45,7 @@ export const Route = createFileRoute("/_authenticated/onskelista")({
 
 function WishlistPage() {
   const { data: items = [] } = useWishlist();
+  const { data: params } = useParameters();
   const add = useAddWish();
   const decide = useDecideWish();
   const del = useDeleteWish();
