@@ -2,6 +2,7 @@
  * Avbetalningsmotor — ren TypeScript, inga sidoeffekter, ingen fetch.
  * All beräkningslogik för lån och avbetalningsplaner bor här.
  */
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
 
 export type LoanKind = "csn" | "billan" | "privatlan" | "kreditkort" | "kontokredit";
 
