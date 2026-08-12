@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Lock } from "lucide-react";
 import {
   useAccounts,
   useCategories,
