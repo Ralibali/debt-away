@@ -11,6 +11,7 @@ import { CoachPanel } from "@/components/CoachPanel";
 import { StrategyComparison } from "@/components/charts/StrategyComparison";
 import { DebtStaircase } from "@/components/charts/DebtStaircase";
 import { InterestVsPrincipal } from "@/components/charts/InterestVsPrincipal";
+import { PaymentSchedule } from "@/components/PaymentSchedule";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -318,6 +319,9 @@ function PlanPage() {
       <DebtStaircase result={chosen} />
 
       <InterestVsPrincipal result={chosen} />
+
+      <PaymentSchedule result={chosen} loans={loans} />
+
 
 
       <div className="panel overflow-hidden">
