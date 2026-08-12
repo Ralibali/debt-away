@@ -211,7 +211,7 @@ function PurchasePage() {
               <div>
                 <div className="label-xs">Effektiv ränta</div>
                 <div className="num font-medium">
-                  {method === "delbetalning" ? `${calc.effektivText}` : "–"}
+                  {method === "delbetalning" ? `${calc.effectiveApr} %` : "–"}
                 </div>
               </div>
             </div>
@@ -242,12 +242,12 @@ function PurchasePage() {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <div className="label-xs">Skuldfri med köpet</div>
-                    <div className="num font-medium">{manag(calc.opportunity.debtFreeWith)}</div>
+                    <div className="num font-medium">{manad(calc.opportunity.debtFreeWith)}</div>
                   </div>
                   <div>
                     <div className="label-xs">Skuldfri utan köpet</div>
                     <div className="num font-medium text-primary">
-                      {manag(calc.opportunity.debtFreeWithout)}
+                      {manad(calc.opportunity.debtFreeWithout)}
                     </div>
                   </div>
                 </div>

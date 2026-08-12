@@ -16,6 +16,7 @@ import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedBudgetplanRouteImport } from './routes/_authenticated/budgetplan'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedKopbeslutRouteImport } from './routes/_authenticated/kopbeslut'
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
@@ -56,6 +57,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKopbeslutRoute = AuthenticatedKopbeslutRouteImport.update({
+  id: '/kopbeslut',
+  path: '/kopbeslut',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLackorRoute = AuthenticatedLackorRouteImport.update({
   id: '/lackor',
   path: '/lackor',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/budgetplan': typeof AuthenticatedBudgetplanRoute
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/budgetplan'
     | '/coach'
     | '/dashboard'
+    | '/kopbeslut'
     | '/lackor'
     | '/lan'
     | '/onskelista'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/budgetplan'
     | '/coach'
     | '/dashboard'
+    | '/kopbeslut'
     | '/lackor'
     | '/lan'
     | '/onskelista'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_authenticated/budgetplan'
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
+    | '/_authenticated/kopbeslut'
     | '/_authenticated/lackor'
     | '/_authenticated/lan'
     | '/_authenticated/onskelista'
@@ -224,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kopbeslut': {
+      id: '/_authenticated/kopbeslut'
+      path: '/kopbeslut'
+      fullPath: '/kopbeslut'
+      preLoaderRoute: typeof AuthenticatedKopbeslutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/lackor': {
       id: '/_authenticated/lackor'
       path: '/lackor'
@@ -267,6 +286,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetplanRoute: typeof AuthenticatedBudgetplanRoute
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKopbeslutRoute: typeof AuthenticatedKopbeslutRoute
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
@@ -279,6 +299,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetplanRoute: AuthenticatedBudgetplanRoute,
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKopbeslutRoute: AuthenticatedKopbeslutRoute,
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
