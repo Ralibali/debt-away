@@ -166,6 +166,7 @@ function pickTarget(
   active: { loan: Loan; balance: number }[],
   strategy: Strategy,
   availableExtra: number,
+  p: UserParameters = DEFAULT_PARAMETERS,
 ): string | null {
   if (active.length === 0) return null;
   if (strategy === "baseline") return null;
@@ -176,18 +177,18 @@ function pickTarget(
     // räntekostnad. Därefter ren lavin.
     const smallest = [...active].sort((a, b) => a.balance - b.balance)[0]!;
     if (monthsToClear(smallest, availableExtra) <= 3) return smallest.loan.id;
-    return pickTarget(active, "avalanche", availableExtra);
+    return pickTarget(active, "avalanche", availableExtra, p);
   }
 
   const sorted = [...active].sort((a, b) => {
     if (strategy === "avalanche") {
-      const diff = effectiveRate(b.loan) - effectiveRate(a.loan);
+      const diff = effectiveRate(b.loan, p) - effectiveRate(a.loan, p);
       if (Math.abs(diff) > 1e-9) return diff;
       return a.balance - b.balance;
     }
     const diff = a.balance - b.balance;
     if (Math.abs(diff) > 1e-9) return diff;
-    return effectiveRate(b.loan) - effectiveRate(a.loan);
+    return effectiveRate(b.loan, p) - effectiveRate(a.loan, p);
   });
   return sorted[0]!.loan.id;
 }
