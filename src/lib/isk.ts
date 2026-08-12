@@ -1,9 +1,12 @@
 /**
  * Schablonskatt på ISK och kapitalförsäkring.
  *
- * Konstanterna ligger i en daterad tabell och ska uppdateras per inkomstår.
+ * Konstanterna kommer i första hand från användarens egna parametrar. Den
+ * daterade tabellen är kvar som fallback för historiska år.
  * Ingen AI, ingen gissning — bara räkning.
  */
+
+import { DEFAULT_PARAMETERS, type UserParameters } from "@/lib/parameters";
 
 export interface IskConstants {
   /** Fribelopp per person, gemensamt för ISK + KF + PEPP */
@@ -14,7 +17,7 @@ export interface IskConstants {
   kapitalskatt: number;
 }
 
-/** Daterad tabell — lägg till ett nytt år här varje år. */
+/** Daterad tabell — fallback när användaren inte satt egna parametrar. */
 export const ISK_CONSTANTS: Record<number, IskConstants> = {
   2025: { fribelopp: 150_000, schablonranta: 0.0296, kapitalskatt: 0.3 },
   // 2026: statslåneränta 2,55 % + 1 procentenhet
@@ -23,7 +26,18 @@ export const ISK_CONSTANTS: Record<number, IskConstants> = {
 
 export const ISK_LATEST_YEAR = 2026;
 
-export function iskConstants(year: number): IskConstants {
+/**
+ * Parametrarna gäller innevarande/senaste år. För äldre år används tabellen,
+ * eftersom en manuell parameter aldrig ska skriva om historiken.
+ */
+export function iskConstants(year: number, p?: UserParameters | null): IskConstants {
+  if (p && year >= ISK_LATEST_YEAR) {
+    return {
+      fribelopp: p.isk_fribelopp,
+      schablonranta: p.isk_schablonranta,
+      kapitalskatt: p.kapitalskatt,
+    };
+  }
   return ISK_CONSTANTS[year] ?? ISK_CONSTANTS[ISK_LATEST_YEAR]!;
 }
 
