@@ -123,20 +123,27 @@ export function rateExplanation(loan: Loan, p: UserParameters = DEFAULT_PARAMETE
     .replace(".", ",")}.`;
 }
 
-/** Minimibetalning exkl. avgift för ett givet saldo. */
-export function minimumPayment(loan: Loan, balance: number): number {
-  if (balance <= 0) return 0;
-  let base = 0;
+/**
+ * Kredittagarens stående minimibetalning exkl. avgift, utan hänsyn till att
+ * sista månaden bara behöver täcka restskulden. Det är detta belopp som
+ * frigörs (och rullas vidare) när lånet är slutbetalt.
+ */
+export function standingMinimum(loan: Loan, balance: number): number {
   if (loan.is_revolving && loan.min_payment_pct != null && loan.min_payment_pct > 0) {
     // Procentregeln gäller, men aldrig under kreditens egna golvbelopp
     // (t.ex. "4 % av saldot, lägst 400 kr").
     const floor = Math.max(REVOLVING_MIN_FLOOR, loan.min_payment ?? 0);
-    base = Math.max((balance * loan.min_payment_pct) / 100, floor);
-  } else if (loan.min_payment != null) {
-    base = loan.min_payment;
+    return Math.max((balance * loan.min_payment_pct) / 100, floor);
   }
-  return Math.min(base, balance + monthlyInterest(loan, balance));
+  return loan.min_payment ?? 0;
 }
+
+/** Minimibetalning exkl. avgift för ett givet saldo. */
+export function minimumPayment(loan: Loan, balance: number): number {
+  if (balance <= 0) return 0;
+  return Math.min(standingMinimum(loan, balance), balance + monthlyInterest(loan, balance));
+}
+
 
 export function monthlyFee(loan: Loan): number {
   return loan.monthly_fee ?? 0;
