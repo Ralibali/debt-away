@@ -109,6 +109,19 @@ function Dashboard() {
     <div className="space-y-8">
       <h1 className="text-24">Översikt</h1>
 
+      {loans.length > 0 && (
+        <section className="panel p-4">
+          <div className="label-xs">Skuldfri</div>
+          <div className="display mt-1 text-40 leading-none sm:text-64">
+            {base.months ? manad(base.debtFreeDate) : "Aldrig"}
+          </div>
+          <p className="mt-3 text-15 text-muted-foreground">
+            Ränta och avgifter kostar dig{" "}
+            <span className="num text-ink">{kr(interest + feeSum)}</span> i månaden.
+          </p>
+        </section>
+      )}
+
       <DailyNumberPanel daily={daily} />
 
       {isLoading ? (
