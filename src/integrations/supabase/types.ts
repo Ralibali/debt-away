@@ -160,6 +160,68 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_commitments: {
+        Row: {
+          active: boolean
+          category_id: string | null
+          created_at: string
+          ends_on: string | null
+          id: string
+          is_essential: boolean
+          kind: string
+          monthly_amount: number
+          name: string
+          notes: string | null
+          notice_days: number | null
+          payment_day: number | null
+          starts_on: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          category_id?: string | null
+          created_at?: string
+          ends_on?: string | null
+          id?: string
+          is_essential?: boolean
+          kind?: string
+          monthly_amount?: number
+          name: string
+          notes?: string | null
+          notice_days?: number | null
+          payment_day?: number | null
+          starts_on?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          category_id?: string | null
+          created_at?: string
+          ends_on?: string | null
+          id?: string
+          is_essential?: boolean
+          kind?: string
+          monthly_amount?: number
+          name?: string
+          notes?: string | null
+          notice_days?: number | null
+          payment_day?: number | null
+          starts_on?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_commitments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       import_profiles: {
         Row: {
           account_id: string | null
