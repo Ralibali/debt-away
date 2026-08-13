@@ -19,7 +19,7 @@ import { NotificationBar } from "@/components/NotificationBar";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 
 const NAV = [
-  { to: "/dashboard", label: "Översikt", short: "Översikt", icon: BarChart3 },
+  { to: "/dashboard", label: "Översikt", short: "Idag", icon: BarChart3 },
   { to: "/kontrollrum", label: "Kontrollrum", short: "Kontroll", icon: Gauge },
   { to: "/lan", label: "Lån", short: "Lån", icon: Landmark },
   { to: "/plan", label: "Plan", short: "Plan", icon: Target },
@@ -33,7 +33,7 @@ const NAV = [
 ] as const;
 
 const MOBILE_NAV = NAV.filter((item) =>
-  ["/dashboard", "/kontrollrum", "/plan", "/budget", "/import"].includes(item.to),
+  ["/dashboard", "/kontrollrum", "/plan", "/budget", "/coach"].includes(item.to),
 );
 
 export function AppShell({ children }: { children: React.ReactNode }) {

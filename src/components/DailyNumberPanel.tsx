@@ -6,6 +6,7 @@ import { nextPhaseNote, type DailyNumber } from "@/lib/daily";
 import { CountUp } from "@/components/CountUp";
 import { DailyCoachCard } from "@/components/DailyCoachCard";
 import { MomentumCard } from "@/components/MomentumCard";
+import { ExtraMoneyCard } from "@/components/ExtraMoneyCard";
 import { datum, kr } from "@/lib/format";
 
 export function DailyNumberPanel({ daily }: { daily: DailyNumber }) {
@@ -69,6 +70,7 @@ export function DailyNumberPanel({ daily }: { daily: DailyNumber }) {
 
       <DailyCoachCard daily={daily} />
       <MomentumCard />
+      <ExtraMoneyCard />
     </>
   );
 }
