@@ -24,6 +24,7 @@ import { CrossoverChart } from "@/components/charts/CrossoverChart";
 import { CountUp } from "@/components/CountUp";
 import { DailyNumberPanel } from "@/components/DailyNumberPanel";
 import { useDaily } from "@/lib/useDaily";
+import { EconomicAssistant } from "@/components/EconomicAssistant";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -124,6 +125,16 @@ function Dashboard() {
       )}
 
       <DailyNumberPanel daily={daily} />
+
+      {!isLoading && !empty && (
+        <EconomicAssistant
+          loans={loans}
+          monthlySurplus={summary.plannedSurplus}
+          bufferValue={advice.bufferValue}
+          bufferTarget={advice.bufferTarget}
+          params={params}
+        />
+      )}
 
       {isLoading ? (
         <p className="text-13 text-muted-foreground">Laddar…</p>
