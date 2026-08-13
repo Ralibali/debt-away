@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
   BarChart3,
+  Gauge,
   Landmark,
   Target,
   PiggyBank,
@@ -9,6 +10,7 @@ import {
   Wallet,
   Upload,
   CalendarDays,
+  RefreshCw,
   SlidersHorizontal,
   LogOut,
 } from "lucide-react";
@@ -17,8 +19,10 @@ import { NotificationBar } from "@/components/NotificationBar";
 
 const NAV = [
   { to: "/dashboard", label: "Översikt", short: "Översikt", icon: BarChart3 },
+  { to: "/kontrollrum", label: "Kontrollrum", short: "Kontroll", icon: Gauge },
   { to: "/lan", label: "Lån", short: "Lån", icon: Landmark },
   { to: "/plan", label: "Plan", short: "Plan", icon: Target },
+  { to: "/omlaggning", label: "Omläggning", short: "Jämför", icon: RefreshCw },
   { to: "/rytm", label: "Rytm", short: "Rytm", icon: CalendarDays },
   { to: "/sparande", label: "Sparande", short: "Spar", icon: Wallet },
   { to: "/budget", label: "Budget", short: "Budget", icon: PiggyBank },
@@ -26,6 +30,10 @@ const NAV = [
   { to: "/import", label: "Import", short: "Import", icon: Upload },
   { to: "/coach", label: "Coach", short: "Coach", icon: Sparkles },
 ] as const;
+
+const MOBILE_NAV = NAV.filter((item) =>
+  ["/dashboard", "/kontrollrum", "/plan", "/budget", "/import"].includes(item.to),
+);
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -38,14 +46,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card">
-        <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 md:flex md:justify-between">
+        <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 md:flex md:justify-between">
           <span className="truncate text-15 font-semibold tracking-tight">Skuldfri</span>
-          <nav className="hidden gap-1 md:flex">
+          <nav className="hidden gap-0.5 md:flex">
             {NAV.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
-                className="rounded-[6px] px-3 py-1.5 text-13 text-muted-foreground transition-colors hover:text-foreground"
+                className="rounded-[6px] px-2 py-1.5 text-12 text-muted-foreground transition-colors hover:text-foreground"
                 activeProps={{ className: "text-foreground underline underline-offset-8" }}
               >
                 {n.label}
@@ -79,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card md:hidden">
         <div className="grid grid-cols-5">
-          {NAV.map((n) => (
+          {MOBILE_NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
