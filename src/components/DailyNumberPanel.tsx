@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { PHASE_LABELS } from "@/lib/phase";
 import { nextPhaseNote, type DailyNumber } from "@/lib/daily";
@@ -59,6 +60,12 @@ export function DailyNumberPanel({ daily }: { daily: DailyNumber }) {
       )}
 
       {note && <p className="mt-4 border-t border-border pt-3 text-13 text-muted-foreground">{note}</p>}
+
+      <div className="mt-4 border-t border-border pt-3">
+        <Link to="/kontrollrum" className="text-13 font-medium underline underline-offset-4">
+          Öppna ekonomiskt kontrollrum →
+        </Link>
+      </div>
     </section>
   );
 }
