@@ -76,21 +76,33 @@ export function useSaveFinancialCommitment() {
     mutationFn: async (input: Partial<FinancialCommitmentInput> & { id?: string; name: string }) => {
       const user_id = await uid();
       const { id, ...rest } = input;
-      const payload = {
-        ...rest,
-        monthly_amount: Math.max(0, Number(rest.monthly_amount ?? 0)),
-        payment_day: rest.payment_day || null,
-        notice_days: rest.notice_days == null ? null : Math.max(0, Number(rest.notice_days)),
-        starts_on: rest.starts_on || null,
-        ends_on: rest.ends_on || null,
-        category_id: rest.category_id || null,
-        notes: rest.notes || null,
-      };
+      const payload: Record<string, unknown> = { ...rest };
+
+      if (rest.monthly_amount !== undefined) {
+        payload.monthly_amount = Math.max(0, Number(rest.monthly_amount));
+      }
+      if (rest.payment_day !== undefined) payload.payment_day = rest.payment_day || null;
+      if (rest.notice_days !== undefined) {
+        payload.notice_days = rest.notice_days == null ? null : Math.max(0, Number(rest.notice_days));
+      }
+      if (rest.starts_on !== undefined) payload.starts_on = rest.starts_on || null;
+      if (rest.ends_on !== undefined) payload.ends_on = rest.ends_on || null;
+      if (rest.category_id !== undefined) payload.category_id = rest.category_id || null;
+      if (rest.notes !== undefined) payload.notes = rest.notes || null;
+
       if (id) {
         const { error } = await commitmentTable().update(payload as never).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await commitmentTable().insert({ ...payload, user_id } as never);
+        const insertPayload = {
+          ...payload,
+          user_id,
+          kind: rest.kind ?? "other",
+          monthly_amount: Math.max(0, Number(rest.monthly_amount ?? 0)),
+          is_essential: rest.is_essential ?? false,
+          active: rest.active ?? true,
+        };
+        const { error } = await commitmentTable().insert(insertPayload as never);
         if (error) throw error;
       }
     },
