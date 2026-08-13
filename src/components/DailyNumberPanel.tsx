@@ -5,12 +5,9 @@ import { PHASE_LABELS } from "@/lib/phase";
 import { nextPhaseNote, type DailyNumber } from "@/lib/daily";
 import { CountUp } from "@/components/CountUp";
 import { DailyCoachCard } from "@/components/DailyCoachCard";
+import { MomentumCard } from "@/components/MomentumCard";
 import { datum, kr } from "@/lib/format";
 
-/**
- * Den stora siffran. Inga varningsfärger, inga utrop — bara beloppet och
- * möjligheten att ta isär det.
- */
 export function DailyNumberPanel({ daily }: { daily: DailyNumber }) {
   const [open, setOpen] = useState(false);
   const note = nextPhaseNote(daily);
@@ -71,6 +68,7 @@ export function DailyNumberPanel({ daily }: { daily: DailyNumber }) {
       </section>
 
       <DailyCoachCard daily={daily} />
+      <MomentumCard />
     </>
   );
 }
