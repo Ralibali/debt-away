@@ -17,14 +17,14 @@ import { NotificationBar } from "@/components/NotificationBar";
 
 const NAV = [
   { to: "/dashboard", label: "Översikt", short: "Översikt", icon: BarChart3 },
+  { to: "/coach", label: "Assistent", short: "Assistent", icon: Sparkles },
   { to: "/lan", label: "Lån", short: "Lån", icon: Landmark },
   { to: "/plan", label: "Plan", short: "Plan", icon: Target },
-  { to: "/rytm", label: "Rytm", short: "Rytm", icon: CalendarDays },
   { to: "/sparande", label: "Sparande", short: "Spar", icon: Wallet },
   { to: "/budget", label: "Budget", short: "Budget", icon: PiggyBank },
+  { to: "/rytm", label: "Rytm", short: "Rytm", icon: CalendarDays },
   { to: "/transaktioner", label: "Transaktioner", short: "Trans.", icon: Receipt },
   { to: "/import", label: "Import", short: "Import", icon: Upload },
-  { to: "/coach", label: "Coach", short: "Coach", icon: Sparkles },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -78,12 +78,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card md:hidden">
-        <div className="grid grid-cols-5">
+        <div className="flex overflow-x-auto">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="flex flex-col items-center gap-1 py-2 text-[0.65rem] text-muted-foreground"
+              className="flex min-w-[72px] flex-1 flex-col items-center gap-1 px-2 py-2 text-[0.65rem] text-muted-foreground"
               activeProps={{ className: "text-foreground" }}
             >
               <n.icon className="size-4" />
