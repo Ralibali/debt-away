@@ -18,9 +18,11 @@ import { Route as AuthenticatedBudgetplanRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
+import { Route as AuthenticatedKontrollrumRouteImport } from './routes/_authenticated/kontrollrum'
 import { Route as AuthenticatedKopbeslutRouteImport } from './routes/_authenticated/kopbeslut'
 import { Route as AuthenticatedLackorRouteImport } from './routes/_authenticated/lackor'
 import { Route as AuthenticatedLanRouteImport } from './routes/_authenticated/lan'
+import { Route as AuthenticatedOmlaggningRouteImport } from './routes/_authenticated/omlaggning'
 import { Route as AuthenticatedOnskelistaRouteImport } from './routes/_authenticated/onskelista'
 import { Route as AuthenticatedParametrarRouteImport } from './routes/_authenticated/parametrar'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
@@ -72,6 +74,12 @@ const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKontrollrumRoute =
+  AuthenticatedKontrollrumRouteImport.update({
+    id: '/kontrollrum',
+    path: '/kontrollrum',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedKopbeslutRoute = AuthenticatedKopbeslutRouteImport.update({
   id: '/kopbeslut',
   path: '/kopbeslut',
@@ -85,6 +93,11 @@ const AuthenticatedLackorRoute = AuthenticatedLackorRouteImport.update({
 const AuthenticatedLanRoute = AuthenticatedLanRouteImport.update({
   id: '/lan',
   path: '/lan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOmlaggningRoute = AuthenticatedOmlaggningRouteImport.update({
+  id: '/omlaggning',
+  path: '/omlaggning',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOnskelistaRoute = AuthenticatedOnskelistaRouteImport.update({
@@ -128,9 +141,11 @@ export interface FileRoutesByFullPath {
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/import': typeof AuthenticatedImportRoute
+  '/kontrollrum': typeof AuthenticatedKontrollrumRoute
   '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
+  '/omlaggning': typeof AuthenticatedOmlaggningRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
@@ -147,9 +162,11 @@ export interface FileRoutesByTo {
   '/coach': typeof AuthenticatedCoachRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/import': typeof AuthenticatedImportRoute
+  '/kontrollrum': typeof AuthenticatedKontrollrumRoute
   '/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/lackor': typeof AuthenticatedLackorRoute
   '/lan': typeof AuthenticatedLanRoute
+  '/omlaggning': typeof AuthenticatedOmlaggningRoute
   '/onskelista': typeof AuthenticatedOnskelistaRoute
   '/parametrar': typeof AuthenticatedParametrarRoute
   '/plan': typeof AuthenticatedPlanRoute
@@ -168,9 +185,11 @@ export interface FileRoutesById {
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
+  '/_authenticated/kontrollrum': typeof AuthenticatedKontrollrumRoute
   '/_authenticated/kopbeslut': typeof AuthenticatedKopbeslutRoute
   '/_authenticated/lackor': typeof AuthenticatedLackorRoute
   '/_authenticated/lan': typeof AuthenticatedLanRoute
+  '/_authenticated/omlaggning': typeof AuthenticatedOmlaggningRoute
   '/_authenticated/onskelista': typeof AuthenticatedOnskelistaRoute
   '/_authenticated/parametrar': typeof AuthenticatedParametrarRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
@@ -189,9 +208,11 @@ export interface FileRouteTypes {
     | '/coach'
     | '/dashboard'
     | '/import'
+    | '/kontrollrum'
     | '/kopbeslut'
     | '/lackor'
     | '/lan'
+    | '/omlaggning'
     | '/onskelista'
     | '/parametrar'
     | '/plan'
@@ -208,9 +229,11 @@ export interface FileRouteTypes {
     | '/coach'
     | '/dashboard'
     | '/import'
+    | '/kontrollrum'
     | '/kopbeslut'
     | '/lackor'
     | '/lan'
+    | '/omlaggning'
     | '/onskelista'
     | '/parametrar'
     | '/plan'
@@ -228,9 +251,11 @@ export interface FileRouteTypes {
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
     | '/_authenticated/import'
+    | '/_authenticated/kontrollrum'
     | '/_authenticated/kopbeslut'
     | '/_authenticated/lackor'
     | '/_authenticated/lan'
+    | '/_authenticated/omlaggning'
     | '/_authenticated/onskelista'
     | '/_authenticated/parametrar'
     | '/_authenticated/plan'
@@ -310,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kontrollrum': {
+      id: '/_authenticated/kontrollrum'
+      path: '/kontrollrum'
+      fullPath: '/kontrollrum'
+      preLoaderRoute: typeof AuthenticatedKontrollrumRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/kopbeslut': {
       id: '/_authenticated/kopbeslut'
       path: '/kopbeslut'
@@ -329,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/lan'
       fullPath: '/lan'
       preLoaderRoute: typeof AuthenticatedLanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/omlaggning': {
+      id: '/_authenticated/omlaggning'
+      path: '/omlaggning'
+      fullPath: '/omlaggning'
+      preLoaderRoute: typeof AuthenticatedOmlaggningRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/onskelista': {
@@ -383,9 +422,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
+  AuthenticatedKontrollrumRoute: typeof AuthenticatedKontrollrumRoute
   AuthenticatedKopbeslutRoute: typeof AuthenticatedKopbeslutRoute
   AuthenticatedLackorRoute: typeof AuthenticatedLackorRoute
   AuthenticatedLanRoute: typeof AuthenticatedLanRoute
+  AuthenticatedOmlaggningRoute: typeof AuthenticatedOmlaggningRoute
   AuthenticatedOnskelistaRoute: typeof AuthenticatedOnskelistaRoute
   AuthenticatedParametrarRoute: typeof AuthenticatedParametrarRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
@@ -401,9 +442,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedImportRoute: AuthenticatedImportRoute,
+  AuthenticatedKontrollrumRoute: AuthenticatedKontrollrumRoute,
   AuthenticatedKopbeslutRoute: AuthenticatedKopbeslutRoute,
   AuthenticatedLackorRoute: AuthenticatedLackorRoute,
   AuthenticatedLanRoute: AuthenticatedLanRoute,
+  AuthenticatedOmlaggningRoute: AuthenticatedOmlaggningRoute,
   AuthenticatedOnskelistaRoute: AuthenticatedOnskelistaRoute,
   AuthenticatedParametrarRoute: AuthenticatedParametrarRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
