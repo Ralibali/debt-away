@@ -69,7 +69,7 @@ export function buildCashflowForecast(input: {
 }): CashflowForecast {
   const horizon = Math.max(1, Math.min(365, input.days ?? 90));
   const events: CashflowEvent[] = [];
-  const points: CashflowPoint[] = [];
+  const points: CashflowPoint[] = [{ date: input.today, balance: Math.round(input.startingBalance) }];
   let balance = input.startingBalance;
   let lowestBalance = balance;
   let lowestDate = input.today;
@@ -84,7 +84,9 @@ export function buildCashflowForecast(input: {
       0,
     );
 
-  for (let index = 0; index < horizon; index += 1) {
+  // Startbalansen är saldot "nu". Händelser på dagens datum kan redan vara
+  // bokförda, så prognosen börjar i morgon för att inte dubbelräkna dem.
+  for (let index = 1; index <= horizon; index += 1) {
     const date = addDays(input.today, index);
 
     if (input.monthlyIncome > 0 && occursOnDay(input.payday, date)) {
