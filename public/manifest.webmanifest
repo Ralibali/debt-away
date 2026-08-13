@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "Skuldfri",
+  "short_name": "Skuldfri",
+  "lang": "sv-SE",
+  "start_url": "/dashboard?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#EEF1F4",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}
