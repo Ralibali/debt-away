@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useBudgets, useCategories, useSaveBudget, useSaveCategory, useTransactions } from "@/lib/data";
 import { summarize } from "@/lib/budget";
+import { detectRecurringPayments } from "@/lib/financial-os";
 import { kr, manad, monthStartISO } from "@/lib/format";
 import { BudgetVariance } from "@/components/charts/BudgetVariance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
@@ -38,6 +38,7 @@ function BudgetPage() {
   const { data: categories = [] } = useCategories();
   const { data: budgets = [] } = useBudgets(month);
   const { data: transactions = [] } = useTransactions(month, null);
+  const { data: allTransactions = [] } = useTransactions(null, null);
   const saveBudget = useSaveBudget();
   const saveCategory = useSaveCategory();
 
@@ -46,6 +47,8 @@ function BudgetPage() {
   const [newFixed, setNewFixed] = useState(false);
 
   const s = summarize(categories, budgets, transactions);
+  const recurring = useMemo(() => detectRecurringPayments(allTransactions), [allTransactions]);
+  const recurringMonthly = recurring.reduce((sum, row) => sum + row.monthlyAmount, 0);
 
   return (
     <div className="space-y-3">
@@ -82,13 +85,13 @@ function BudgetPage() {
           </div>
         </div>
         <div className="mt-3 rounded-md bg-primary/10 p-2.5">
-          <div className="label-xs">Överskott tillgängligt för extraamortering</div>
+          <div className="label-xs">Överskott efter planerade utgifter</div>
           <div className="num text-xl font-semibold text-primary">{kr(s.plannedSurplus)}</div>
           <div className="num mt-0.5 text-xs text-muted-foreground">
             Faktiskt hittills: {kr(s.actualSurplus)}
           </div>
           <Link to="/plan" className="mt-2 inline-block text-xs font-medium text-primary">
-            Använd i avbetalningsplanen →
+            Se avbetalningsplanen →
           </Link>
         </div>
       </div>
@@ -99,6 +102,40 @@ function BudgetPage() {
           .map((l) => ({ name: l.category.name, planned: l.planned, actual: l.actual }))}
       />
 
+      <div className="panel p-3">
+        <div className="label-xs">Återkommande betalningar</div>
+        <div className="mt-1 flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-medium">Månadsmönster i dina transaktioner</h2>
+          {recurring.length > 0 && (
+            <span className="num text-xs text-muted-foreground">ca {kr(recurringMonthly)}/mån</span>
+          )}
+        </div>
+        {recurring.length === 0 ? (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Minst två månaders transaktioner behövs för att känna igen stabila månadsmönster.
+          </p>
+        ) : (
+          <div className="mt-2 divide-y divide-border border-y border-border">
+            {recurring.slice(0, 8).map((row) => (
+              <div key={row.key} className="flex items-center justify-between gap-3 py-2 text-xs">
+                <div className="min-w-0">
+                  <div className="truncate font-medium">{row.label}</div>
+                  <div className="text-[0.65rem] text-muted-foreground">
+                    {row.monthsSeen} månader · {row.confidence} mönster
+                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <div className="num">{kr(row.monthlyAmount)}/mån</div>
+                  <div className="num text-[0.65rem] text-muted-foreground">{kr(row.annualAmount)}/år</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="mt-2 text-[0.65rem] text-muted-foreground">
+          Ett återkommande mönster betyder inte att betalningen är onödig. Bekräfta vad posten avser innan du ändrar något.
+        </p>
+      </div>
 
       {(["inkomst", "utgift"] as const).map((kind) => {
         const lines = s.lines.filter((l) => l.category.kind === kind);
