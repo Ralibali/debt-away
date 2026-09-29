@@ -284,3 +284,17 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+
+## Bankkoppling — read-only pilot
+
+Projektet har nu en avgränsad grund för framtida open banking under `/bankkoppling`.
+
+- Vyn är **read-only** och har ingen betalningsinitiering.
+- Tabellen `bank_connections` lagrar bara anslutningsmetadata, status, samtyckets utgångsdatum och senaste synktid.
+- Banklösenord, provider-nycklar, access tokens, saldon och transaktionspayloads ska **inte** sparas i tabellen.
+- Frontend har endast `SELECT` till tabellen; skrivning ska ske server-side efter verifierat providerflöde.
+- `VITE_OPEN_BANKING_CONNECT_URL` får endast peka på en appägd HTTPS-endpoint som startar det autentiserade providerflödet. Den ska inte innehålla hemligheter.
+- Utan kommersiellt provideravtal/produktionskonfiguration är kopplingsknappen avstängd och befintlig CSV/Excel-import är fallback.
+
+Detta ersätter inte kravet på avtal och regulatoriskt korrekt upplägg för en kommersiell PSD2/open-banking-tjänst.
