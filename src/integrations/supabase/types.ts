@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_connections: {
+        Row: {
+          consent_expires_at: string | null
+          created_at: string
+          id: string
+          institution_name: string | null
+          last_synced_at: string | null
+          provider: string
+          provider_connection_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consent_expires_at?: string | null
+          created_at?: string
+          id?: string
+          institution_name?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          provider_connection_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consent_expires_at?: string | null
+          created_at?: string
+          id?: string
+          institution_name?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          provider_connection_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_insights: {
         Row: {
           created_at: string | null
