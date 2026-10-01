@@ -27,15 +27,30 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [authStatus, setAuthStatus] = useState<"checking" | "ready" | "unavailable">("checking");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.navigate({ to: "/dashboard" });
-    });
+    let active = true;
+    async function checkSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!active) return;
+        if (data.session) await router.navigate({ to: "/dashboard" });
+        if (active) setAuthStatus("ready");
+      } catch {
+        if (active) setAuthStatus("unavailable");
+      }
+    }
+    void checkSession();
+    return () => {
+      active = false;
+    };
   }, [router]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (authStatus !== "ready" || busy) return;
     setBusy(true);
     try {
       if (mode === "login") {
@@ -68,43 +83,55 @@ function AuthPage() {
         <h1 className="text-lg font-semibold tracking-tight">
           Skuldfri<span className="text-primary">.</span>
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {mode === "login" ? "Logga in på ditt konto." : "Skapa ditt konto."}
-        </p>
-        <form onSubmit={submit} className="mt-5 space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="email">E-post</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Lösenord</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={busy}>
-            {mode === "login" ? "Logga in" : "Skapa konto"}
-          </Button>
-        </form>
-        <button
-          className="mt-4 w-full text-xs text-muted-foreground hover:text-foreground"
-          onClick={() => setMode(mode === "login" ? "signup" : "login")}
-        >
-          {mode === "login" ? "Har du inget konto? Skapa ett" : "Har du redan ett konto? Logga in"}
-        </button>
+        {authStatus === "unavailable" ? (
+          <p role="status" className="mt-5 text-sm text-muted-foreground">
+            Inloggning är tillfälligt otillgänglig. Kontakta oss via e-post.
+          </p>
+        ) : authStatus === "checking" ? (
+          <p role="status" className="mt-5 text-sm text-muted-foreground">
+            Förbereder inloggning…
+          </p>
+        ) : (
+          <>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {mode === "login" ? "Logga in på ditt konto." : "Skapa ditt konto."}
+            </p>
+            <form onSubmit={submit} className="mt-5 space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="email">E-post</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password">Lösenord</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={busy}>
+                {mode === "login" ? "Logga in" : "Skapa konto"}
+              </Button>
+            </form>
+            <button
+              className="mt-4 w-full text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+            >
+              {mode === "login" ? "Har du inget konto? Skapa ett" : "Har du redan ett konto? Logga in"}
+            </button>
+          </>
+        )}
         <p className="mt-5 text-center text-xs text-muted-foreground">
           Kontakt:{" "}
           <a href="mailto:info@auroramedia.se" className="underline">
