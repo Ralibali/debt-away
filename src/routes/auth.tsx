@@ -105,6 +105,12 @@ function AuthPage() {
         >
           {mode === "login" ? "Har du inget konto? Skapa ett" : "Har du redan ett konto? Logga in"}
         </button>
+        <p className="mt-5 text-center text-xs text-muted-foreground">
+          Kontakt:{" "}
+          <a href="mailto:info@auroramedia.se" className="underline">
+            info@auroramedia.se
+          </a>
+        </p>
       </div>
     </div>
   );
